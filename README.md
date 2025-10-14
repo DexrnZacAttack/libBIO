@@ -1,2 +1,2 @@
 # libBIO
- C++ Binary IO library
+C++ Binary IO library
