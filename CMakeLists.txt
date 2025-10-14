@@ -42,6 +42,7 @@ if (CMAKE_CXX_BYTE_ORDER EQUAL BIG_ENDIAN)
     target_compile_definitions(BIO PRIVATE IO_BIG_ENDIAN)
 endif ()
 
+include(FetchContent)
 # https://github.com/jothepro/doxygen-awesome-css?tab=readme-ov-file#cmake-with-fetchcontent
 FetchContent_Declare(
         doxygen-awesome-css
