@@ -5,7 +5,7 @@
 #include "codecvt"
 #include "locale"
 #include "string"
-#include <BinaryIO.h>
+#include "BinaryIO.h"
 
 namespace bio {
     std::string BinaryIO::readString(const size_t size) {

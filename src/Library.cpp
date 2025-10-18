@@ -5,12 +5,11 @@
 
 namespace bio {
     extern "C" {
-        constexpr const char *bio_get_library_version() { return BIO_VERSION; } // NOLINT
         constexpr const char *bio_get_build_type() { return BUILD_TYPE; } // NOLINT
-        constexpr const char *bio_get_compiler_name() { return COMPILER_NAME; } // NOLINT
-        constexpr const char *bio_get_platform_arch() { return PLATFORM_ARCH; } // NOLINT
-        constexpr const char *bio_get_platform() { return PLATFORM_NAME; } // NOLINT
+        constexpr const char *bio_get_compiler_name() { return BIO_COMPILER_NAME; } // NOLINT
+        constexpr const char *bio_get_platform_arch() { return BIO_PLATFORM_ARCH; } // NOLINT
+        constexpr const char *bio_get_platform() { return BIO_PLATFORM_NAME; } // NOLINT
         constexpr const char *bio_get_version() { return BIO_VERSION; } // NOLINT
-        constexpr const char *bio_get_library_string() { return LIBRARY_STRING; } // NOLINT
+        constexpr const char *bio_get_library_string() { return bio::LIBRARY_STRING; } // NOLINT
     }
 }

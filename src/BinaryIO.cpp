@@ -3,10 +3,10 @@
 // 20/12/2024.
 //
 
-#include <BinaryIO.h>
-
 #include <cstring>
 #include <vector>
+
+#include "BinaryIO.h"
 
 namespace bio {
     BinaryIO::BinaryIO(uint8_t *input) : mOrigin(input), mData(input) {}

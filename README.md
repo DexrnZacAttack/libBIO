@@ -1,5 +1,5 @@
-# libBIO
-C++ Binary IO library
+# libBIO~~HAZARD~~ (BinaryIO)
+A "Simple" C++ Binary IO library
 
 ## Usage
 ### CMakeLists
@@ -16,6 +16,6 @@ FetchContent_Declare(
 # Make it "available" (afaik lets you access vars)
 FetchContent_MakeAvailable(BIO)
 
-# Add it to include dirs
-include_directories(${BIO_SOURCE_DIR})
+# Link against it
+target_link_libraries(MyProj PRIVATE BIO)
 ```

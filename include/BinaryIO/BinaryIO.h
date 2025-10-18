@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "Library.h"
+#include "BinaryIO/Library.h"
 
 namespace bio {
     /** Byte Order/Endian dictates which way bytes are written */
