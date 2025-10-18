@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
-project(BIO VERSION 1.0.1)
+project(BIO VERSION 1.0.2)
 
 set(VERSION_SUFFIX "") # used for non-stable versions, otherwise leave blank
 set(CMAKE_CXX_STANDARD 17)
@@ -35,7 +35,7 @@ target_include_directories(BIO
 )
 target_compile_definitions(BIO PRIVATE BIO_EXPORTS)
 
-target_compile_definitions(BIO PRIVATE
+target_compile_definitions(BIO PUBLIC
         BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
         BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
         BIO_PLATFORM_ARCH="${CMAKE_SYSTEM_PROCESSOR}"
