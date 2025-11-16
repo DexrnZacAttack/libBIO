@@ -1,8 +1,11 @@
 # libBIO~~HAZARD~~ (BinaryIO)
+
 A "Simple" C++ Binary IO library
 
 ## Usage
+
 ### CMakeLists
+
 ```cmake
 # Import FetchContent (remove if already included)
 include(FetchContent)
@@ -18,4 +21,6 @@ FetchContent_MakeAvailable(BIO)
 
 # Link against it
 target_link_libraries(MyProj PRIVATE BIO)
+# You can also link against the static version if you wish
+target_link_libraries(MyProj PRIVATE BIO-Static)
 ```
