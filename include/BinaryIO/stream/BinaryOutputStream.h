@@ -70,6 +70,10 @@ namespace bio::stream {
 
         ISeekable &operator-=(size_t amount) override;
 
+        const std::ostream &getStream() const;
+
+        std::ostream &getStream();
+
     private:
         std::ostream &mStream;
 

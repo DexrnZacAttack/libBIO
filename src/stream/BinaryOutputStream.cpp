@@ -63,4 +63,12 @@ namespace bio::stream {
         seekRelative(amount);
         return *this;
     }
+
+    const std::ostream & BinaryOutputStream::getStream() const {
+        return mStream;
+    }
+
+    std::ostream & BinaryOutputStream::getStream() {
+        return mStream;
+    }
 }
