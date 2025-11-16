@@ -38,6 +38,14 @@ namespace bio::stream {
             this->write<char16_t>(0, endian);
     }
 
+    void BinaryOutputStream::writeU32String(const std::u32string &input, bio::util::ByteOrder endian,
+        bool nullTerminate) {
+        this->writeBytes(reinterpret_cast<const uint8_t *>(input.data()), input.size() * sizeof(char32_t));
+
+        if (nullTerminate)
+            this->write<char32_t>(0, endian);
+    }
+
     size_t BinaryOutputStream::getPosition() const {
         return mStream.tellp();
     }
