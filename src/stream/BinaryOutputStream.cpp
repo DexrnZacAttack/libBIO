@@ -101,7 +101,7 @@ namespace bio::stream {
         writeUint24(static_cast<uint32_t>(v), endian);
     }
 
-    void BinaryOutputStream::fill(const uint8_t b, const uint8_t sz) {
+    void BinaryOutputStream::fill(const uint8_t b, const size_t sz) {
         // Unsure if this is the fastest way, but should work fine.
         uint8_t *v = new uint8_t[sz];
         std::fill_n(v, sz, b);

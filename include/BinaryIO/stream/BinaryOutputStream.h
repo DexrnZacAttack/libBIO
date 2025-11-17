@@ -83,7 +83,7 @@ namespace bio::stream {
          * @param b The byte to fill with
          * @param sz How many bytes should be placed
          */
-        void fill(uint8_t b, uint8_t sz);
+        void fill(uint8_t b, size_t sz);
 
     private:
         std::ostream &mStream;

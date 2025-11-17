@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
-project(BIO VERSION 2.0.3)
+project(BIO VERSION 2.0.4)
 
 set(VERSION_SUFFIX "") # used for non-stable versions, otherwise leave blank
 set(CMAKE_CXX_STANDARD 17)
