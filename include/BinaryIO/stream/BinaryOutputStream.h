@@ -74,6 +74,17 @@ namespace bio::stream {
 
         std::ostream &getStream();
 
+        void writeUint24(uint32_t v, bio::util::ByteOrder endian) override;
+
+        void writeInt24(int32_t v, bio::util::ByteOrder endian) override;
+
+        /** Writes `sz` amount of `b` bytes
+         *
+         * @param b The byte to fill with
+         * @param sz How many bytes should be placed
+         */
+        void fill(uint8_t b, uint8_t sz);
+
     private:
         std::ostream &mStream;
 

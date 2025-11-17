@@ -31,15 +31,15 @@ namespace bio::stream {
     }
 
     void BinaryOutputStream::writeU16String(const std::u16string &input, const bio::util::ByteOrder endian,
-                                            bool nullTerminate) {
+                                            const bool nullTerminate) {
         this->writeBytes(reinterpret_cast<const uint8_t *>(input.data()), input.size() * sizeof(char16_t));
 
         if (nullTerminate)
             this->write<char16_t>(0, endian);
     }
 
-    void BinaryOutputStream::writeU32String(const std::u32string &input, bio::util::ByteOrder endian,
-        bool nullTerminate) {
+    void BinaryOutputStream::writeU32String(const std::u32string &input, const bio::util::ByteOrder endian,
+        const bool nullTerminate) {
         this->writeBytes(reinterpret_cast<const uint8_t *>(input.data()), input.size() * sizeof(char32_t));
 
         if (nullTerminate)
@@ -78,5 +78,36 @@ namespace bio::stream {
 
     std::ostream & BinaryOutputStream::getStream() {
         return mStream;
+    }
+
+    void BinaryOutputStream::writeUint24(const uint32_t v, const bio::util::ByteOrder endian) {
+        // Probably not the most efficient
+        const uint8_t b0 = static_cast<uint8_t>(v & 0xFF);
+        const uint8_t b1 = static_cast<uint8_t>((v >> 8) & 0xFF);
+        const uint8_t b2 = static_cast<uint8_t>((v >> 16) & 0xFF);
+
+        if (endian == util::ByteOrder::LITTLE) {
+            writeByte(b0);
+            writeByte(b1);
+            writeByte(b2);
+        } else {
+            writeByte(b2);
+            writeByte(b1);
+            writeByte(b0);
+        }
+    }
+
+    void BinaryOutputStream::writeInt24(const int32_t v, const bio::util::ByteOrder endian) {
+        writeUint24(static_cast<uint32_t>(v), endian);
+    }
+
+    void BinaryOutputStream::fill(const uint8_t b, const uint8_t sz) {
+        // Unsure if this is the fastest way, but should work fine.
+        uint8_t *v = new uint8_t[sz];
+        std::fill_n(v, sz, b);
+
+        writeBytes(v, sz);
+
+        delete[] v;
     }
 }

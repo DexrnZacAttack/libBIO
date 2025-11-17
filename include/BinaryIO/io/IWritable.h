@@ -29,6 +29,12 @@ namespace bio::io {
         /** Writes a signed byte */
         virtual void writeSignedByte(int8_t v) = 0;
 
+        /** Writes an uint24 (unsigned 3 byte int) */
+        virtual void writeUint24(uint32_t v, bio::util::ByteOrder endian) = 0;
+
+        /** Writes an int24 (signed 3 byte int) */
+        virtual void writeInt24(int32_t v, bio::util::ByteOrder endian) = 0;
+
         /** Writes an array of bytes */
         virtual void writeBytes(const uint8_t *v, size_t size) = 0;
 

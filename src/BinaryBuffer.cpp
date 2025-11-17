@@ -224,4 +224,24 @@ namespace bio {
         this->mData -= amount;
         return *this;
     }
+
+    void BinaryBuffer::writeUint24(const uint32_t v, const bio::util::ByteOrder endian) {
+        const uint8_t b0 = static_cast<uint8_t>(v & 0xFF);
+        const uint8_t b1 = static_cast<uint8_t>((v >> 8) & 0xFF);
+        const uint8_t b2 = static_cast<uint8_t>((v >> 16) & 0xFF);
+
+        if (endian == bio::util::ByteOrder::LITTLE) {
+            writeByte(b0);
+            writeByte(b1);
+            writeByte(b2);
+        } else {
+            writeByte(b2);
+            writeByte(b1);
+            writeByte(b0);
+        }
+    }
+
+    void BinaryBuffer::writeInt24(const int32_t v, const bio::util::ByteOrder endian) {
+        writeUint24(static_cast<uint32_t>(v), endian);
+    }
 } // namespace lce::io

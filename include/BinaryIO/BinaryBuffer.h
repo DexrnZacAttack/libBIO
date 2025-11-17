@@ -158,6 +158,10 @@ namespace bio {
 
         ISeekable & operator-=(size_t amount) override;
 
+        void writeUint24(uint32_t v, bio::util::ByteOrder endian) override;
+
+        void writeInt24(int32_t v, bio::util::ByteOrder endian) override;
+
     private:
         uint8_t *mOrigin; /**< Data origin */
         uint8_t *mData;   /**< Data pointer, holds where we are in the array */

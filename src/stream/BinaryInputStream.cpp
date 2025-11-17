@@ -40,7 +40,7 @@ namespace bio::stream {
         return v;
     }
 
-    int32_t BinaryInputStream::readInt24(const bio::util::ByteOrder endian) {
+    int32_t BinaryInputStream::readInt24(const util::ByteOrder endian) {
         uint32_t res = readUint24(endian);
 
         if (res & (1 << 23)) {
