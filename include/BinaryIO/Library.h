@@ -27,7 +27,7 @@
     __declspec(allocate(n))
 #elif defined(__GNUC__) || defined(__clang__)
 #if defined(__APPLE__)
-    #define TO_SECTION(n) __attribute__((section("__DATA," n)))
+    #define TO_SECTION(n) __attribute__((section("__TEXT," n)))
 #else
     #define TO_SECTION(n) __attribute__((section(n)))
 #endif
