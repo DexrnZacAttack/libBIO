@@ -22,9 +22,7 @@
 #endif
 
 #if defined(_MSC_VER)
-    #define TO_SECTION(n) \
-    __pragma(section(n, read)) \
-    __declspec(allocate(n))
+    #define TO_SECTION(n)
 #elif defined(__GNUC__) || defined(__clang__)
 #if defined(__APPLE__)
     #define TO_SECTION(n) __attribute__((section("__TEXT," n)))
