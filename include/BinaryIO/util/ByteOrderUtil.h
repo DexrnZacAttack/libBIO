@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <stddef.h>
 #include <type_traits>
+#include <cstring>
 
 namespace bio::util {
     class ByteOrderUtil {

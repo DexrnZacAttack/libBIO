@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.31)
-project(BIO VERSION 2.0.6)
+project(BIO VERSION 2.0.7)
 
 set(VERSION_SUFFIX "") # used for non-stable versions, otherwise leave blank
 set(CMAKE_CXX_STANDARD 17)
-
-option(BIO_COMPILE_DOCS "Create documentation task" ON)
 
 option(ENABLE_OPTIMIZATIONS "Enable compiler optimizations" ON)
 if (ENABLE_OPTIMIZATIONS STREQUAL "ON")
@@ -36,7 +34,14 @@ set(FILES
 )
 
 add_library(BIO-Static STATIC ${FILES})
-add_library(BIO SHARED ${FILES})
+
+option(ENABLE_SHARED_BUILD "Enable shared library building" ON)
+if (ENABLE_SHARED_BUILD STREQUAL "ON")
+    add_library(BIO SHARED ${FILES})
+else()
+    add_library(BIO STATIC ${FILES})
+endif()
+unset(ENABLE_SHARED_BUILD CACHE)
 
 set_target_properties(BIO-Static BIO PROPERTIES LINKER_LANGUAGE CXX) # CMake Error: CMake can not determine linker language for target: BinaryIO
 
@@ -72,7 +77,8 @@ if (CMAKE_CXX_BYTE_ORDER EQUAL BIG_ENDIAN)
     target_compile_definitions(BIO PRIVATE IO_BIG_ENDIAN)
 endif ()
 
-if (BIO_COMPILE_DOCS)
+option(BIO_COMPILE_DOCS "Create documentation task" ON)
+if (BIO_COMPILE_DOCS STREQUAL "ON")
     include(FetchContent)
     # https://github.com/jothepro/doxygen-awesome-css?tab=readme-ov-file#cmake-with-fetchcontent
     FetchContent_Declare(
@@ -97,3 +103,4 @@ if (BIO_COMPILE_DOCS)
         )
     ENDIF ()
 endif ()
+unset(BIO_COMPILE_DOCS CACHE)
