@@ -2,6 +2,9 @@
 
 A "Simple" C++ Binary IO library
 
+> [!IMPORTANT]
+> Pull Requests and Issues are only accepted on the [Codeberg repo](https://codeberg.org/Dexrn/libBIO).
+
 ## Usage
 
 ### CMakeLists

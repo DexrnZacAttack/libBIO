@@ -1,0 +1,14 @@
+name: Auto close PRs
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  close:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh pr close "${{ github.event.pull_request.html_url }}" -c "This PR has been closed because this repo is being mirrored from Codeberg, and does not accept changes made on GitHub. Please fork the [Codeberg repo](https://codeberg.org/Dexrn/libBIO), push your changes, and make a PR.   \n[View repo on Codeberg](https://codeberg.org/Dexrn/libBIO)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
