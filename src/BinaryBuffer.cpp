@@ -9,31 +9,31 @@
 #include "BinaryIO/BinaryBuffer.h"
 
 namespace bio {
-    BinaryBuffer::BinaryBuffer(uint8_t *input) : mOrigin(input), mData(input) {
+    BinaryBuffer::BinaryBuffer(uint8_t *input) : m_originPtr(input), m_positionPtr(input) {
     }
 
     BinaryBuffer::BinaryBuffer(const size_t size) {
         uint8_t *data = new uint8_t[size]{};
-        this->mOrigin = data;
-        this->mData = data;
+        this->m_originPtr = data;
+        this->m_positionPtr = data;
     }
 
     void BinaryBuffer::seek(const size_t offset) {
-        this->mData = this->mOrigin + offset;
+        this->m_positionPtr = this->m_originPtr + offset;
     }
 
-    void BinaryBuffer::seekRelative(const size_t offset) { this->mData += offset; }
+    void BinaryBuffer::seekRelative(const size_t offset) { this->m_positionPtr += offset; }
 
     bool BinaryBuffer::canSeek() const {
         return true;
     }
 
-    size_t BinaryBuffer::getPosition() const { return this->mData - this->mOrigin; }
+    size_t BinaryBuffer::getPosition() const { return this->m_positionPtr - this->m_originPtr; }
 
-    uint8_t BinaryBuffer::readByte() { return *this->mData++; }
+    uint8_t BinaryBuffer::readByte() { return *this->m_positionPtr++; }
 
     int8_t BinaryBuffer::readSignedByte() {
-        return static_cast<int8_t>(*this->mData++);
+        return static_cast<int8_t>(*this->m_positionPtr++);
     }
 
     uint32_t BinaryBuffer::readUint24(const bio::util::ByteOrder endian) {
@@ -60,37 +60,37 @@ namespace bio {
         return static_cast<int32_t>(res);
     }
 
-    void BinaryBuffer::writeByte(const uint8_t v) { *this->mData++ = v; }
+    void BinaryBuffer::writeByte(const uint8_t v) { *this->m_positionPtr++ = v; }
 
     void BinaryBuffer::writeBytes(const uint8_t *v, const size_t size) {
-        std::memcpy(this->mData, v, size);
-        this->mData += size;
+        std::memcpy(this->m_positionPtr, v, size);
+        this->m_positionPtr += size;
     }
 
     void BinaryBuffer::writeSignedByte(const int8_t v) {
-        *this->mData++ = static_cast<uint8_t>(v);
+        *this->m_positionPtr++ = static_cast<uint8_t>(v);
     }
 
-    uint8_t *BinaryBuffer::getData() const { return this->mOrigin; }
+    uint8_t *BinaryBuffer::getData() const { return this->m_originPtr; }
 
-    uint8_t *BinaryBuffer::getDataRelative() const { return this->mData; }
+    uint8_t *BinaryBuffer::getDataRelative() const { return this->m_positionPtr; }
 
     uint8_t *BinaryBuffer::readOfSize(const size_t sz) {
         uint8_t *result = new uint8_t[sz];
-        std::memcpy(result, this->mData, sz);
-        this->mData += sz;
+        std::memcpy(result, this->m_positionPtr, sz);
+        this->m_positionPtr += sz;
         return result;
     }
 
     std::vector<uint8_t> BinaryBuffer::readOfSizeVec(const size_t sz) {
-        std::vector result(this->mData, this->mData + sz);
-        this->mData += sz;
+        std::vector result(this->m_positionPtr, this->m_positionPtr + sz);
+        this->m_positionPtr += sz;
         return result;
     }
 
     void BinaryBuffer::readInto(uint8_t *into, const size_t sz) {
-        std::memcpy(into, this->mData, sz);
-        this->mData += sz;
+        std::memcpy(into, this->m_positionPtr, sz);
+        this->m_positionPtr += sz;
     }
 
     std::string BinaryBuffer::readString(const size_t size) {
@@ -102,10 +102,10 @@ namespace bio {
 
     std::string BinaryBuffer::readStringNT() {
         // I believe this should find the next null byte, which can replace most of this method's bulk
-        const size_t len = std::strlen(reinterpret_cast<const char *>(this->mData));
-        std::string r(reinterpret_cast<const char *>(this->mData), len);
+        const size_t len = std::strlen(reinterpret_cast<const char *>(this->m_positionPtr));
+        std::string r(reinterpret_cast<const char *>(this->m_positionPtr), len);
 
-        this->mData += len + 1;
+        this->m_positionPtr += len + 1;
 
         return r;
     }
@@ -132,7 +132,7 @@ namespace bio {
 
     std::u16string BinaryBuffer::readU16StringNT(const util::ByteOrder endian) {
         // conv to char16_t so we can read shorts when iterating
-        const char16_t *ptr = reinterpret_cast<const char16_t *>(this->mData);
+        const char16_t *ptr = reinterpret_cast<const char16_t *>(this->m_positionPtr);
 
         // poor man's strlen
         size_t len = 0;
@@ -142,7 +142,7 @@ namespace bio {
         std::u16string result = readU16String(len, endian);
 
         // bump because we had to read null terminator
-        this->mData += sizeof(char16_t);
+        this->m_positionPtr += sizeof(char16_t);
         return result;
     }
 
@@ -167,7 +167,7 @@ namespace bio {
 
     std::u32string BinaryBuffer::readU32StringNT(const util::ByteOrder endian) {
         // conv to char16_t so we can read shorts when iterating
-        const char32_t *ptr = reinterpret_cast<const char32_t *>(this->mData);
+        const char32_t *ptr = reinterpret_cast<const char32_t *>(this->m_positionPtr);
 
         // poor man's strlen
         size_t len = 0;
@@ -177,7 +177,7 @@ namespace bio {
         std::u32string result = readU32String(len, endian);
 
         // bump because we had to read null terminator
-        this->mData += sizeof(char32_t);
+        this->m_positionPtr += sizeof(char32_t);
         return result;
     }
 
@@ -208,20 +208,20 @@ namespace bio {
     }
 
     uint8_t &BinaryBuffer::operator[](const size_t i) {
-        return mOrigin[i];
+        return m_originPtr[i];
     }
 
     const uint8_t &BinaryBuffer::operator[](const size_t i) const {
-        return mOrigin[i];
+        return m_originPtr[i];
     }
 
     util::ISeekable &BinaryBuffer::operator+=(const size_t amount) {
-        this->mData += amount;
+        this->m_positionPtr += amount;
         return *this;
     }
 
     util::ISeekable &BinaryBuffer::operator-=(const size_t amount) {
-        this->mData -= amount;
+        this->m_positionPtr -= amount;
         return *this;
     }
 

@@ -9,7 +9,7 @@
 #include <cstring>
 
 namespace bio::util {
-    class ByteOrderUtil {
+    class BIO_API ByteOrderUtil {
     public:
         ByteOrderUtil() = delete;
 

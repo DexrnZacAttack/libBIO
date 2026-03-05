@@ -54,8 +54,8 @@ namespace bio {
          * @see readBE() for reading a Big Endian value
          */
         template <typename T> T readLE() {
-            const T v = util::ByteOrderUtil::little2sys(*reinterpret_cast<const T *>(this->mData));
-            this->mData += sizeof(T);
+            const T v = util::ByteOrderUtil::little2sys(*reinterpret_cast<const T *>(this->m_positionPtr));
+            this->m_positionPtr += sizeof(T);
             return v;
         }
 
@@ -66,8 +66,8 @@ namespace bio {
          * @see readLE() for reading a Little Endian value
          */
         template <typename T> T readBE() {
-            const T v = util::ByteOrderUtil::big2sys(*reinterpret_cast<const T *>(this->mData));
-            this->mData += sizeof(T);
+            const T v = util::ByteOrderUtil::big2sys(*reinterpret_cast<const T *>(this->m_positionPtr));
+            this->m_positionPtr += sizeof(T);
             return v;
         }
 
@@ -94,10 +94,10 @@ namespace bio {
         template <typename T>
         void write(const T v, const util::ByteOrder endian) {
             if (endian == util::ByteOrder::LITTLE)
-                *reinterpret_cast<T *>(this->mData) = util::ByteOrderUtil::little2sys(v);
+                *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::little2sys(v);
             else
-                *reinterpret_cast<T *>(this->mData) = util::ByteOrderUtil::big2sys(v);
-            this->mData += sizeof(T);
+                *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::big2sys(v);
+            this->m_positionPtr += sizeof(T);
         }
 
         /** Writes a value in Little Endian
@@ -105,8 +105,8 @@ namespace bio {
          * @param v The value to write
          */
         template <typename T> void writeLE(const T v) {
-            *reinterpret_cast<T *>(this->mData) = util::ByteOrderUtil::little2sys(v);
-            this->mData += sizeof(T);
+            *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::little2sys(v);
+            this->m_positionPtr += sizeof(T);
         }
 
         /** Writes a value in Big Endian
@@ -114,8 +114,8 @@ namespace bio {
          * @param v The value to write
          */
         template <typename T> void writeBE(const T v) {
-            *reinterpret_cast<T *>(this->mData) = util::ByteOrderUtil::big2sys(v);
-            this->mData += sizeof(T);
+            *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::big2sys(v);
+            this->m_positionPtr += sizeof(T);
         }
 
         uint8_t *getData() const;
@@ -163,8 +163,8 @@ namespace bio {
         void writeInt24(int32_t v, bio::util::ByteOrder endian) override;
 
     private:
-        uint8_t *mOrigin; /**< Data origin */
-        uint8_t *mData;   /**< Data pointer, holds where we are in the array */
+        uint8_t *m_originPtr; /**< Data origin */
+        uint8_t *m_positionPtr;   /**< Data pointer, holds where we are in the array */
     };
 } // namespace lce::io
 

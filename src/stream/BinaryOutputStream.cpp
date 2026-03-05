@@ -6,20 +6,20 @@
 #include <ostream>
 
 namespace bio::stream {
-    BinaryOutputStream::BinaryOutputStream(std::ostream &s) : mStream(s) {
-        mIsSeekable = s.tellp() != -1;
+    BinaryOutputStream::BinaryOutputStream(std::ostream &s) : m_stream(s) {
+        m_isSeekable = s.tellp() != -1;
     }
 
     void BinaryOutputStream::writeByte(const uint8_t v) {
-        mStream << v;
+        m_stream << v;
     }
 
     void BinaryOutputStream::writeSignedByte(const int8_t v) {
-        mStream << v;
+        m_stream << v;
     }
 
     void BinaryOutputStream::writeBytes(const uint8_t *v, const size_t size) {
-        mStream.write(reinterpret_cast<const char *>(v), size);
+        m_stream.write(reinterpret_cast<const char *>(v), size);
     }
 
     void BinaryOutputStream::writeString(const std::string &input, const bool nullTerminate) {
@@ -47,19 +47,19 @@ namespace bio::stream {
     }
 
     size_t BinaryOutputStream::getPosition() const {
-        return mStream.tellp();
+        return m_stream.tellp();
     }
 
     void BinaryOutputStream::seek(const size_t offset) {
-        mStream.seekp(offset);
+        m_stream.seekp(offset);
     }
 
     void BinaryOutputStream::seekRelative(const size_t offset) {
-        mStream.seekp(offset, std::ios::cur);
+        m_stream.seekp(offset, std::ios::cur);
     }
 
     bool BinaryOutputStream::canSeek() const {
-        return mIsSeekable;
+        return m_isSeekable;
     }
 
     util::ISeekable &BinaryOutputStream::operator+=(const size_t amount) {
@@ -73,11 +73,11 @@ namespace bio::stream {
     }
 
     const std::ostream & BinaryOutputStream::getStream() const {
-        return mStream;
+        return m_stream;
     }
 
     std::ostream & BinaryOutputStream::getStream() {
-        return mStream;
+        return m_stream;
     }
 
     void BinaryOutputStream::writeUint24(const uint32_t v, const bio::util::ByteOrder endian) {

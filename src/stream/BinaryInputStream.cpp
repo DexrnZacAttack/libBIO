@@ -4,27 +4,27 @@
 #include "BinaryIO/stream/BinaryInputStream.h"
 
 namespace bio::stream {
-    BinaryInputStream::BinaryInputStream(std::istream &s) : mStream(s) {
-        mIsSeekable = s.tellg() != -1;
+    BinaryInputStream::BinaryInputStream(std::istream &s) : m_stream(s) {
+        m_isSeekable = s.tellg() != -1;
     }
 
     uint8_t BinaryInputStream::readByte() {
         char b;
-        mStream.get(b);
+        m_stream.get(b);
 
         return static_cast<uint8_t>(b);
     }
 
     int8_t BinaryInputStream::readSignedByte() {
         char b;
-        mStream.get(b);
+        m_stream.get(b);
 
         return static_cast<int8_t>(b);
     }
 
     uint32_t BinaryInputStream::readUint24(const bio::util::ByteOrder endian) {
         uint8_t medium[3];
-        mStream.read(reinterpret_cast<char *>(medium), 3);
+        m_stream.read(reinterpret_cast<char *>(medium), 3);
 
         uint32_t v;
         if (endian == util::ByteOrder::LITTLE) {
@@ -52,36 +52,36 @@ namespace bio::stream {
 
     uint8_t *BinaryInputStream::readOfSize(const size_t sz) {
         uint8_t *out = new uint8_t[sz];
-        mStream.read(reinterpret_cast<char *>(out), sz);
+        m_stream.read(reinterpret_cast<char *>(out), sz);
 
         return out;
     }
 
     std::vector<uint8_t> BinaryInputStream::readOfSizeVec(const size_t sz) {
         std::vector<uint8_t> out(sz);
-        mStream.read(reinterpret_cast<char *>(out.data()), sz);
+        m_stream.read(reinterpret_cast<char *>(out.data()), sz);
 
         return out;
     }
 
     void BinaryInputStream::readInto(uint8_t *into, const size_t sz) {
-        mStream.read(reinterpret_cast<char *>(into), sz);
+        m_stream.read(reinterpret_cast<char *>(into), sz);
     }
 
     size_t BinaryInputStream::getPosition() const {
-        return mStream.tellg();
+        return m_stream.tellg();
     }
 
     void BinaryInputStream::seek(const size_t offset) {
-        mStream.seekg(offset);
+        m_stream.seekg(offset);
     }
 
     void BinaryInputStream::seekRelative(const size_t offset) {
-        mStream.seekg(offset, std::ios::cur);
+        m_stream.seekg(offset, std::ios::cur);
     }
 
     bool BinaryInputStream::canSeek() const {
-        return mIsSeekable;
+        return m_isSeekable;
     }
 
     std::string BinaryInputStream::readString(const size_t size) {
@@ -95,7 +95,7 @@ namespace bio::stream {
         std::string res;
 
         char c;
-        while (mStream.get(c)) {
+        while (m_stream.get(c)) {
             if (c == '\0') break;
             res += c;
         }
@@ -200,10 +200,10 @@ namespace bio::stream {
     }
 
     const std::istream &BinaryInputStream::getStream() const {
-        return mStream;
+        return m_stream;
     }
 
     std::istream &BinaryInputStream::getStream() {
-        return mStream;
+        return m_stream;
     }
 }

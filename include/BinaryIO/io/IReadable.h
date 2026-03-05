@@ -20,7 +20,7 @@ namespace bio::io {
      * r->SomeReadable::readByte(); // most compilers do this automatically
      * @endcode
      */
-    class IReadable {
+    class BIO_API IReadable {
     public:
         virtual ~IReadable() = default;
 

@@ -33,7 +33,7 @@ namespace bio::stream {
         template<typename T>
         void writeLE(const T v) {
             T c = util::ByteOrderUtil::little2sys(v);
-            mStream.write(reinterpret_cast<char *>(&c), sizeof(v));
+            m_stream.write(reinterpret_cast<char *>(&c), sizeof(v));
         }
 
         /** Writes a value in Big Endian
@@ -43,7 +43,7 @@ namespace bio::stream {
         template<typename T>
         void writeBE(const T v) {
             T c = util::ByteOrderUtil::big2sys(v);
-            mStream.write(reinterpret_cast<char *>(&c), sizeof(v));
+            m_stream.write(reinterpret_cast<char *>(&c), sizeof(v));
         }
 
         void writeByte(uint8_t v) override;
@@ -86,9 +86,9 @@ namespace bio::stream {
         void fill(uint8_t b, size_t sz);
 
     private:
-        std::ostream &mStream;
+        std::ostream &m_stream;
 
-        bool mIsSeekable = false;
+        bool m_isSeekable = false;
     };
 }
 

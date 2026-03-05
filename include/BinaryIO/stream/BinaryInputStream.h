@@ -44,7 +44,7 @@ namespace bio::stream {
         template<typename T>
         T readLE() {
             T p;
-            mStream.read(reinterpret_cast<char *>(&p), sizeof(p));
+            m_stream.read(reinterpret_cast<char *>(&p), sizeof(p));
 
             return util::ByteOrderUtil::little2sys(p);
         }
@@ -58,7 +58,7 @@ namespace bio::stream {
         template<typename T>
         T readBE() {
             T p;
-            mStream.read(reinterpret_cast<char *>(&p), sizeof(p));
+            m_stream.read(reinterpret_cast<char *>(&p), sizeof(p));
 
             return util::ByteOrderUtil::big2sys(p);
         }
@@ -106,9 +106,9 @@ namespace bio::stream {
         std::istream &getStream();
 
     private:
-        std::istream &mStream;
+        std::istream &m_stream;
 
-        bool mIsSeekable = false;
+        bool m_isSeekable = false;
     };
 }
 

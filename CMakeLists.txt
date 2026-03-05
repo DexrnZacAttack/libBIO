@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
-project(BIO VERSION 2.0.8)
+project(BIO VERSION 2.0.9)
 
 set(VERSION_SUFFIX "") # used for non-stable versions, otherwise leave blank
 set(CMAKE_CXX_STANDARD 17)
@@ -56,6 +56,7 @@ target_compile_definitions(BIO-Static PRIVATE BIO_EXPORTS)
 target_compile_definitions(BIO PRIVATE BIO_EXPORTS)
 
 target_compile_definitions(BIO-Static PUBLIC
+        BIO_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
         BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
         BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
         BIO_PLATFORM_ARCH="${CMAKE_SYSTEM_PROCESSOR}"
@@ -64,6 +65,7 @@ target_compile_definitions(BIO-Static PUBLIC
 )
 
 target_compile_definitions(BIO PUBLIC
+        BIO_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
         BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
         BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
         BIO_PLATFORM_ARCH="${CMAKE_SYSTEM_PROCESSOR}"
@@ -104,3 +106,7 @@ if (BIO_COMPILE_DOCS STREQUAL "ON")
     ENDIF ()
 endif ()
 unset(BIO_COMPILE_DOCS CACHE)
+
+option(BIO_TESTS "Build libBIO tests" ON)
+    add_subdirectory("tests")
+unset(BIO_TESTS CACHE)

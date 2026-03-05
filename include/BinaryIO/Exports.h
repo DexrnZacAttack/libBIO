@@ -4,12 +4,6 @@
 #pragma once
 #include "BinaryIO/Library.h"
 
-#if CMAKE_BUILD_DEBUG
-#define BIO_BUILD_TYPE "Debug"
-#else
-#define BIO_BUILD_TYPE "Release"
-#endif
-
 namespace bio {
     constexpr const char *const LIBRARY_STRING = "libBIO v" BIO_VERSION " (" BIO_COMPILER_NAME " / " BIO_BUILD_TYPE " | " BIO_PLATFORM_NAME " " BIO_PLATFORM_ARCH ") | https://github.com/DexrnZacAttack/libBIO";
 
