@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <type_traits>
 #include <cstring>
+#include "BinaryIO/Platform.h" // NOLINT (needed for BIO_IF_CONSTEXPR)
 
 namespace bio::util {
     class BIO_API ByteOrderUtil {
@@ -32,8 +33,8 @@ namespace bio::util {
         // instruction
         template <typename T>
         static constexpr T swapOrder(const T input) {
-            if constexpr (std::is_integral_v<T>) {
-                if constexpr (sizeof(T) == 2) {
+            BIO_IF_CONSTEXPR (std::is_integral<T>::value) {
+                BIO_IF_CONSTEXPR (sizeof(T) == 2) {
 #if defined(__clang__) || defined(__GNUC__)
                     return static_cast<T>(
                         __builtin_bswap16(static_cast<uint16_t>(input)));
@@ -43,7 +44,7 @@ namespace bio::util {
 #else
                     return swapOrderInternal(input);
 #endif
-                } else if constexpr (sizeof(T) == 4) {
+                } else BIO_IF_CONSTEXPR (sizeof(T) == 4) {
 #if defined(__clang__) || defined(__GNUC__)
                     return static_cast<T>(
                         __builtin_bswap32(static_cast<uint32_t>(input)));
@@ -53,7 +54,7 @@ namespace bio::util {
 #else
                     return swapOrderInternal(input);
 #endif
-                } else if constexpr (sizeof(T) == 8) {
+                } else BIO_IF_CONSTEXPR (sizeof(T) == 8) {
 #if defined(__clang__) || defined(__GNUC__)
                     return static_cast<T>(
                         __builtin_bswap64(static_cast<uint64_t>(input)));

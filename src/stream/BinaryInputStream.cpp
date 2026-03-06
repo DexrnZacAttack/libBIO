@@ -8,6 +8,14 @@ namespace bio::stream {
         m_isSeekable = s.tellg() != -1;
     }
 
+    uint8_t BinaryInputStream::peekByte() const {
+        return this->m_stream.peek();
+    }
+
+    int8_t BinaryInputStream::peekSignedByte() const {
+        return this->peekByte();
+    }
+
     uint8_t BinaryInputStream::readByte() {
         char b;
         m_stream.get(b);
@@ -68,7 +76,7 @@ namespace bio::stream {
         m_stream.read(reinterpret_cast<char *>(into), sz);
     }
 
-    size_t BinaryInputStream::getPosition() const {
+    size_t BinaryInputStream::getOffset() const {
         return m_stream.tellg();
     }
 
@@ -86,7 +94,7 @@ namespace bio::stream {
 
     std::string BinaryInputStream::readString(const size_t size) {
         std::string result(size, '\0');
-        readInto(reinterpret_cast<uint8_t *>(result.data()), size);
+        readInto(reinterpret_cast<uint8_t *>(&result[0]), size);
 
         return result;
     }
@@ -106,7 +114,7 @@ namespace bio::stream {
     std::u16string BinaryInputStream::readU16String(const size_t size, const bio::util::ByteOrder endian) {
         std::u16string res(size, u'\0');
 
-        readInto(reinterpret_cast<uint8_t *>(res.data()), size * sizeof(char16_t));
+        readInto(reinterpret_cast<uint8_t *>(&res[0]), size * sizeof(char16_t));
 
 #if defined(BR_BIG_ENDIAN)
         if (endian == util::ByteOrder::LITTLE) {
@@ -149,7 +157,7 @@ namespace bio::stream {
     std::u32string BinaryInputStream::readU32String(const size_t size, const bio::util::ByteOrder endian) {
         std::u32string res(size, U'\0');
 
-        readInto(reinterpret_cast<uint8_t *>(res.data()), size * sizeof(char32_t));
+        readInto(reinterpret_cast<uint8_t *>(&res[0]), size * sizeof(char32_t));
 
 #if defined(BR_BIG_ENDIAN)
         if (endian == util::ByteOrder::LITTLE) {
@@ -189,12 +197,12 @@ namespace bio::stream {
         return res;
     }
 
-    util::ISeekable &BinaryInputStream::operator+=(const size_t amount) {
+    io::ISeekable &BinaryInputStream::operator+=(const size_t amount) {
         seekRelative(amount);
         return *this;
     }
 
-    util::ISeekable &BinaryInputStream::operator-=(const size_t amount) {
+    io::ISeekable &BinaryInputStream::operator-=(const size_t amount) {
         seekRelative(amount);
         return *this;
     }

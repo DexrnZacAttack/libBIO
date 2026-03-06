@@ -1,8 +1,16 @@
 cmake_minimum_required(VERSION 3.31)
-project(BIO VERSION 2.0.9)
+project(bio VERSION 3.0.0)
 
 set(VERSION_SUFFIX "") # used for non-stable versions, otherwise leave blank
-set(CMAKE_CXX_STANDARD 17)
+include(CheckCXXCompilerFlag)
+
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 14) #default
+endif()
+
+if(CMAKE_CXX_STANDARD LESS 14)
+    message(WARNING "C++14 or higher is required, libBIO may fail to build otherwise.")
+endif()
 
 option(ENABLE_OPTIMIZATIONS "Enable compiler optimizations" ON)
 if (ENABLE_OPTIMIZATIONS STREQUAL "ON")
@@ -13,15 +21,15 @@ endif ()
 unset(ENABLE_OPTIMIZATIONS CACHE)
 
 set(FILES
-        include/BinaryIO/BinaryBuffer.h
+        include/BinaryIO/buffer/BinaryBuffer.h
         include/BinaryIO/Library.h
         include/BinaryIO/Exports.h
-        src/BinaryBuffer.cpp
+        src/buffer/BinaryBuffer.cpp
         src/Library.cpp
         include/BinaryIO/util/ByteOrder.h
         src/stream/BinaryInputStream.cpp
         include/BinaryIO/stream/BinaryInputStream.h
-        include/BinaryIO/util/ISeekable.h
+        include/BinaryIO/io/ISeekable.h
         include/BinaryIO/util/ByteOrderUtil.h
         include/BinaryIO/io/IReadable.h
         include/BinaryIO/io/IWritable.h
@@ -31,31 +39,40 @@ set(FILES
         src/io/IWritable.cpp
         src/stream/BinaryOutputStream.cpp
         include/BinaryIO/stream/BinaryOutputStream.h
+        include/BinaryIO/buffer/BinaryBuffer.tpp
+        include/BinaryIO/Platform.h
+        include/BinaryIO/io/IBuffer.h
+        include/BinaryIO/buffer/SizedBinaryBuffer.h
+        src/buffer/SizedBinaryBuffer.cpp
+        include/BinaryIO/stream/BinaryInputStream.tpp
+        include/BinaryIO/stream/BinaryOutputStream.tpp
+        include/BinaryIO/io/ISimplePeekable.h
 )
 
-add_library(BIO-Static STATIC ${FILES})
+add_library(bio-static STATIC ${FILES})
 
 option(ENABLE_SHARED_BUILD "Enable shared library building" ON)
 if (ENABLE_SHARED_BUILD STREQUAL "ON")
-    add_library(BIO SHARED ${FILES})
+    add_library(bio SHARED ${FILES})
 else()
-    add_library(BIO STATIC ${FILES})
+    add_library(bio STATIC ${FILES})
 endif()
 unset(ENABLE_SHARED_BUILD CACHE)
 
-set_target_properties(BIO-Static BIO PROPERTIES LINKER_LANGUAGE CXX) # CMake Error: CMake can not determine linker language for target: BinaryIO
+set_target_properties(bio-static bio PROPERTIES LINKER_LANGUAGE CXX) # CMake Error: CMake can not determine linker language for target: BinaryIO
 
-target_include_directories(BIO-Static
+target_include_directories(bio-static
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_include_directories(BIO
+target_include_directories(bio
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-target_compile_definitions(BIO-Static PRIVATE BIO_EXPORTS)
-target_compile_definitions(BIO PRIVATE BIO_EXPORTS)
+target_compile_definitions(bio-static PRIVATE BIO_EXPORTS)
+target_compile_definitions(bio PRIVATE BIO_EXPORTS)
 
-target_compile_definitions(BIO-Static PUBLIC
+target_compile_definitions(bio-static PUBLIC
+        BIO_CXX_STANDARD="${CMAKE_CXX_STANDARD}"
         BIO_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
         BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
         BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
@@ -64,7 +81,8 @@ target_compile_definitions(BIO-Static PUBLIC
         BIO_RC_VERSION=${PROJECT_VERSION_MAJOR},${PROJECT_VERSION_MINOR},${PROJECT_VERSION_PATCH}
 )
 
-target_compile_definitions(BIO PUBLIC
+target_compile_definitions(bio PUBLIC
+        BIO_CXX_STANDARD="${CMAKE_CXX_STANDARD}"
         BIO_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
         BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
         BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
@@ -75,9 +93,21 @@ target_compile_definitions(BIO PUBLIC
 
 #set endianness define
 if (CMAKE_CXX_BYTE_ORDER EQUAL BIG_ENDIAN)
-    target_compile_definitions(BIO-Static PRIVATE IO_BIG_ENDIAN)
-    target_compile_definitions(BIO PRIVATE IO_BIG_ENDIAN)
+    target_compile_definitions(bio-static PRIVATE IO_BIG_ENDIAN)
+    target_compile_definitions(bio PRIVATE IO_BIG_ENDIAN)
 endif ()
+
+set(ALLOW_CPP17_EXTENSIONS_DEFAULT OFF)
+if (NOT CXX_EXTENSIONS STREQUAL OFF)
+    set(ALLOW_CPP17_EXTENSIONS_DEFAULT ON)
+endif()
+
+option(ALLOW_CPP17_EXTENSIONS "Allow C++17 extensions in C++14" ${ALLOW_CPP17_EXTENSIONS_DEFAULT})
+if (ALLOW_CPP17_EXTENSIONS STREQUAL ON)
+    target_compile_definitions(bio-static PUBLIC BIO_ALLOW_CPP17_EXTENSIONS)
+    target_compile_definitions(bio PUBLIC BIO_ALLOW_CPP17_EXTENSIONS)
+endif ()
+unset(ALLOW_CPP17_EXTENSIONS CACHE)
 
 option(BIO_COMPILE_DOCS "Create documentation task" ON)
 if (BIO_COMPILE_DOCS STREQUAL "ON")
@@ -98,7 +128,7 @@ if (BIO_COMPILE_DOCS STREQUAL "ON")
 
         CONFIGURE_FILE(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 
-        ADD_CUSTOM_TARGET(BIO-Docs
+        ADD_CUSTOM_TARGET(bio-docs
                 COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                 VERBATIM
@@ -107,6 +137,6 @@ if (BIO_COMPILE_DOCS STREQUAL "ON")
 endif ()
 unset(BIO_COMPILE_DOCS CACHE)
 
-option(BIO_TESTS "Build libBIO tests" ON)
+option(BIO_TESTS "Build libBIO tests" OFF)
     add_subdirectory("tests")
 unset(BIO_TESTS CACHE)

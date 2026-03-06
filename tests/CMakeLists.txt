@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
-project(BIO-TESTS)
+project(bio-tests)
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -9,6 +9,8 @@ set(TEST_FILES
         include/BinaryIO/Tests/util/Random.h
         include/BinaryIO/Tests/util/Output.h
 )
+
+add_subdirectory(cpp14-compile-test)
 
 include(FetchContent)
 FetchContent_Declare(tfw
@@ -20,13 +22,13 @@ FetchContent_Declare(tfw
 )
 FetchContent_MakeAvailable(tfw)
 
-add_executable(BIO-Tests ${TEST_FILES})
+add_executable(bio-tests ${TEST_FILES})
 
-target_include_directories(BIO-Tests
+target_include_directories(bio-tests
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-target_link_libraries(BIO-Tests
-        PRIVATE BIO
+target_link_libraries(bio-tests
+        PRIVATE bio
         PRIVATE tfw
 )

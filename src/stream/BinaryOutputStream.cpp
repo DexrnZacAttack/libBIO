@@ -46,7 +46,7 @@ namespace bio::stream {
             this->write<char32_t>(0, endian);
     }
 
-    size_t BinaryOutputStream::getPosition() const {
+    size_t BinaryOutputStream::getOffset() const {
         return m_stream.tellp();
     }
 
@@ -62,12 +62,12 @@ namespace bio::stream {
         return m_isSeekable;
     }
 
-    util::ISeekable &BinaryOutputStream::operator+=(const size_t amount) {
+    io::ISeekable &BinaryOutputStream::operator+=(const size_t amount) {
         seekRelative(amount);
         return *this;
     }
 
-    util::ISeekable &BinaryOutputStream::operator-=(const size_t amount) {
+    io::ISeekable &BinaryOutputStream::operator-=(const size_t amount) {
         seekRelative(amount);
         return *this;
     }

@@ -7,8 +7,11 @@
 #include <stddef.h>
 #include <string>
 #include <vector>
+#include <span>
 
 #include "BinaryIO/util/ByteOrder.h"
+
+#include <span>
 
 namespace bio::io {
     /** Interface to provide reading methods
@@ -120,6 +123,14 @@ namespace bio::io {
          * @returns The string
          */
         virtual std::u32string readU32StringNT(bio::util::ByteOrder endian) = 0;
+
+#if __cplusplus == CPP20
+        /** Returns a view over a section of data
+         *
+         * @param sz The size of the view
+         */
+        virtual std::span<uint8_t> getView(size_t sz) const = 0;
+#endif
 
         /** Reads a byte */
         virtual IReadable& operator>>(uint8_t &b);

@@ -7,13 +7,13 @@
 
 #include "BinaryIO/io/IWritable.h"
 #include "BinaryIO/util/ByteOrderUtil.h"
-#include "BinaryIO/util/ISeekable.h"
+#include "BinaryIO/io/ISeekable.h"
 
 namespace bio::stream {
     /** std::ostream wrapper with added writing methods */
-    class BIO_API BinaryOutputStream : public io::IWritable, public util::ISeekable {
+    class BIO_API BinaryOutputStream : public io::IWritable, public io::ISeekable {
     public:
-        BinaryOutputStream(std::ostream &s);
+        explicit BinaryOutputStream(std::ostream &s);
 
         /** Writes a value with the given endianness
          *
@@ -21,30 +21,21 @@ namespace bio::stream {
          * @param endian The byte order to write that value in
          */
         template<typename T>
-        void write(const T v, const util::ByteOrder endian) {
-            if (endian == util::ByteOrder::LITTLE) this->writeLE(v);
-            else this->writeBE(v);
-        }
+        void write(const T v, const util::ByteOrder endian);
 
         /** Writes a value in Little Endian
          *
          * @param v The value to write
          */
         template<typename T>
-        void writeLE(const T v) {
-            T c = util::ByteOrderUtil::little2sys(v);
-            m_stream.write(reinterpret_cast<char *>(&c), sizeof(v));
-        }
+        void writeLE(const T v);
 
         /** Writes a value in Big Endian
          *
          * @param v The value to write
          */
         template<typename T>
-        void writeBE(const T v) {
-            T c = util::ByteOrderUtil::big2sys(v);
-            m_stream.write(reinterpret_cast<char *>(&c), sizeof(v));
-        }
+        void writeBE(const T v);
 
         void writeByte(uint8_t v) override;
 
@@ -58,7 +49,7 @@ namespace bio::stream {
 
         void writeU32String(const std::u32string &input, bio::util::ByteOrder endian, bool nullTerminate) override;
 
-        size_t getPosition() const override;
+        size_t getOffset() const override;
 
         void seek(size_t offset) override;
 
@@ -90,6 +81,8 @@ namespace bio::stream {
 
         bool m_isSeekable = false;
     };
+
+#include "BinaryIO/stream/BinaryOutputStream.tpp"
 }
 
 #endif //BIO_BINARYOUTPUTSTREAM_H

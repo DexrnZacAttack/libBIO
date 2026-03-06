@@ -7,14 +7,14 @@
 #include "BinaryIO/Library.h"
 #include <stddef.h> // why won't it find size_t otherwise
 
-namespace bio::util {
+namespace bio::io {
     /** Interface for a seekable buffer/stream */
     class BIO_API ISeekable {
     public:
         virtual ~ISeekable() = default;
 
         /** Returns the current position in the buffer */
-        virtual size_t getPosition() const = 0;
+        virtual size_t getOffset() const = 0;
 
         /** Seeks to a certain position in the buffer */
         virtual void seek(size_t offset) = 0;

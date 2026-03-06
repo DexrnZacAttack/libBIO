@@ -15,15 +15,15 @@ include(FetchContent)
 
 # Grab from the repo
 FetchContent_Declare(
-        BIO
-        GIT_REPOSITORY https://github.com/DexrnZacAttack/libBIO.git
-        GIT_TAG main
+        bio
+        GIT_REPOSITORY https://codeberg.org/Dexrn/libBIO.git
+        GIT_TAG 3.0.0
 )
 # Make it "available" (afaik lets you access vars)
-FetchContent_MakeAvailable(BIO)
+FetchContent_MakeAvailable(bio)
 
 # Link against it
-target_link_libraries(MyProj PRIVATE BIO)
+target_link_libraries(MyProj PRIVATE bio)
 # You can also link against the static version if you wish
-target_link_libraries(MyProj PRIVATE BIO-Static)
+target_link_libraries(MyProj PRIVATE bio-static)
 ```

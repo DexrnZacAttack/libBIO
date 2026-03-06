@@ -9,15 +9,16 @@
 
 #include "BinaryIO/io/IReadable.h"
 #include "BinaryIO/util/ByteOrder.h"
-#include "BinaryIO/util/ISeekable.h"
-#include "BinaryIO/util/ByteOrderUtil.h"
+#include "BinaryIO/io/ISeekable.h"
+#include "BinaryIO/io/ISimplePeekable.h"
+#include "BinaryIO/util/ByteOrderUtil.h" //NOLINT (import is used by tpp file)
 
 namespace bio::stream {
     // bis bos
     /** std::istream wrapper with added reading methods */
-    class BIO_API BinaryInputStream : public io::IReadable, public util::ISeekable {
+    class BIO_API BinaryInputStream : public io::IReadable, public io::ISimplePeekable, public io::ISeekable {
     public:
-        BinaryInputStream(std::istream &s);
+        explicit BinaryInputStream(std::istream &s);
 
         /** Reads a value the size of the given type using the given endian/byte
          * order
@@ -29,11 +30,7 @@ namespace bio::stream {
          * @see readLE() for reading a Little Endian value
          */
         template<typename T>
-        T read(const bio::util::ByteOrder endian) {
-            if (endian == bio::util::ByteOrder::LITTLE) return readLE<T>();
-
-            return readBE<T>();
-        }
+        T read(util::ByteOrder endian);
 
         /** Reads a value the size of the given type as Little Endian
          *
@@ -42,12 +39,7 @@ namespace bio::stream {
          * @see readBE() for reading a Big Endian value
          */
         template<typename T>
-        T readLE() {
-            T p;
-            m_stream.read(reinterpret_cast<char *>(&p), sizeof(p));
-
-            return util::ByteOrderUtil::little2sys(p);
-        }
+        T readLE();
 
         /** Reads a value the size of the given type as Big Endian
          *
@@ -56,12 +48,11 @@ namespace bio::stream {
          * @see readLE() for reading a Little Endian value
          */
         template<typename T>
-        T readBE() {
-            T p;
-            m_stream.read(reinterpret_cast<char *>(&p), sizeof(p));
+        T readBE();
 
-            return util::ByteOrderUtil::big2sys(p);
-        }
+        uint8_t peekByte() const override;
+
+        int8_t peekSignedByte() const override;
 
         uint8_t readByte() override;
 
@@ -77,7 +68,7 @@ namespace bio::stream {
 
         void readInto(uint8_t *into, size_t sz) override;
 
-        size_t getPosition() const override;
+        size_t getOffset() const override;
 
         void seek(size_t offset) override;
 
@@ -110,6 +101,8 @@ namespace bio::stream {
 
         bool m_isSeekable = false;
     };
+
+#include "BinaryIO/stream/BinaryInputStream.tpp"
 }
 
 #endif //BIO_BINARYINPUTSTREAM_H
