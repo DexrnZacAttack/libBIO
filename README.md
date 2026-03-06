@@ -17,7 +17,7 @@ include(FetchContent)
 FetchContent_Declare(
         bio
         GIT_REPOSITORY https://codeberg.org/Dexrn/libBIO.git
-        GIT_TAG 3.0.0
+        GIT_TAG 3.0.1
 )
 # Make it "available" (afaik lets you access vars)
 FetchContent_MakeAvailable(bio)
