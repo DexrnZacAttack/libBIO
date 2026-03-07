@@ -141,7 +141,7 @@ std::uint32_t u24 = buf.readUint24(); // reads into uint32_t cuz there is no uin
 ```
 
 ### An example of undefined behavior
-```
+```cpp
 // You can also specify other types to read/write, however the behavior is undefined.
 // Additionally, byte order handling may flip the entire structure
 buf.write<MyStruct>({ false, 0, 1l }) // {bool, int, long}
