@@ -153,3 +153,16 @@ struct AnotherStruct {
 
 buf.write<AnotherStruct>({ "Hello, world!" }); // Writes out the address of that const char *, instead of the string contents
 ```
+
+## TODO
+- [ ] Allow user to specialize a custom read and write function for their class
+  - I believe we can specialize read/write with a custom class type for this
+  - Ideally, it should be as simple as calling `buf.read<T>` after specialization
+  - The user impl could have it call `buf.read<T>` internally and create a struct based off those values, as commonly seen in many implementations.
+- [ ] Improve string reading/writing
+  - [ ] Allow for writing const char *, const char16_t *, const char32_t *, etc.
+  - [ ] Allow for getting a fast reference view of the string
+    - This string would be very temporary, as it would be invalid as soon as the data pointer which the buffer holds is deleted/invalidated 
+    - Ideally, return an `std::string_view` that views over the string in data 
+  - [ ] Add support for surrogates when doing `char16_t` conversions
+    - Still need to look into whether `char16_t[]` allows for surrogates
