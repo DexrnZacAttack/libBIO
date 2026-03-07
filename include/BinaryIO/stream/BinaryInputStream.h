@@ -32,6 +32,17 @@ namespace bio::stream {
         template<typename T>
         T read(util::ByteOrder endian);
 
+        /** Reads a value the size of the given type using the platform endian/byte
+         * order
+         *
+         * @returns The value
+         *
+         * @see readBE() for reading a Big Endian value
+         * @see readLE() for reading a Little Endian value
+         */
+        template<typename T>
+        T read();
+
         /** Reads a value the size of the given type as Little Endian
          *
          * @returns The value

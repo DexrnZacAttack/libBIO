@@ -19,8 +19,25 @@ template <typename T> T BinaryBuffer::read(const util::ByteOrder endian) {
     return this->readBE<T>();
 }
 
+template <typename T>
+T BinaryBuffer::read() {
+    BIO_IF_CONSTEXPR (bio::util::ByteOrder::PLATFORM == bio::util::ByteOrder::LITTLE)
+        return readLE<T>();
+
+    return this->readBE<T>();
+}
+
 template <typename T> T BinaryBuffer::peek(const util::ByteOrder endian, const size_t offset, const util::Origin origin) const {
-    if (endian == bio::util::ByteOrder::LITTLE) return this->peekLE<T>(offset, origin);
+    if (endian == bio::util::ByteOrder::LITTLE)
+        return this->peekLE<T>(offset, origin);
+
+    return this->peekBE<T>(offset, origin);
+}
+
+template <typename T>
+T BinaryBuffer::peek(const size_t offset, const util::Origin origin) const {
+    BIO_IF_CONSTEXPR (bio::util::ByteOrder::PLATFORM == bio::util::ByteOrder::LITTLE)
+        return this->peekLE<T>(offset, origin);
 
     return this->peekBE<T>(offset, origin);
 }
@@ -45,6 +62,34 @@ template <typename T> T BinaryBuffer::readBE() {
 template <typename T> T BinaryBuffer::peekBE(const size_t offset, const util::Origin origin) const {
     const T v = util::ByteOrderUtil::big2sys(*reinterpret_cast<const T *>(this->ptrForOrigin(origin) + offset));
     return v;
+}
+
+template <typename T>
+void BinaryBuffer::write(const T v, const util::ByteOrder endian) {
+    if (endian == util::ByteOrder::LITTLE) {
+        this->writeLE<T>(v);
+    } else {
+        this->writeBE<T>(v);
+    }
+}
+
+template <typename T>
+void BinaryBuffer::write(const T v) {
+    BIO_IF_CONSTEXPR (util::ByteOrder::PLATFORM == util::ByteOrder::LITTLE) {
+        this->writeLE<T>(v);
+    } else {
+        this->writeBE<T>(v);
+    }
+}
+
+template <typename T> void BinaryBuffer::writeLE(const T v) {
+    *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::little2sys(v);
+    this->m_positionPtr += sizeof(T);
+}
+
+template <typename T> void BinaryBuffer::writeBE(const T v) {
+    *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::big2sys(v);
+    this->m_positionPtr += sizeof(T);
 }
 
 #endif // BIO_BINARYBUFFER_TPP

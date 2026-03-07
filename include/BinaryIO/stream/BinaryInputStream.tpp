@@ -11,6 +11,14 @@ T BinaryInputStream::read(const util::ByteOrder endian) {
     return readBE<T>();
 }
 
+template <typename T>
+T BinaryInputStream::read() {
+    BIO_IF_CONSTEXPR (bio::util::ByteOrder::PLATFORM == bio::util::ByteOrder::LITTLE)
+        return readLE<T>();
+
+    return readBE<T>();
+}
+
 template<typename T>
 T BinaryInputStream::readLE() {
     T p;

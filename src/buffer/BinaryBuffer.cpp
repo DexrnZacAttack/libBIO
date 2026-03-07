@@ -202,11 +202,7 @@ namespace bio::buffer {
 
         // this converts endianness to system native
         // otherwise string would be garbled unicode slop
-#if defined(BR_BIG_ENDIAN)
-        if (endian == util::ByteOrder::LITTLE) {
-#else
-        if (endian == util::ByteOrder::BIG) {
-#endif
+        if (endian != util::ByteOrder::PLATFORM) {
             for (char16_t &c: res) {
                 c = util::ByteOrderUtil::swapOrder(c);
             }
@@ -237,11 +233,7 @@ namespace bio::buffer {
 
         readInto(reinterpret_cast<uint8_t *>(&res[0]), size * sizeof(char32_t));
 
-#if defined(BR_BIG_ENDIAN)
-        if (endian == util::ByteOrder::LITTLE) {
-#else
-        if (endian == util::ByteOrder::BIG) {
-#endif
+        if (endian != util::ByteOrder::PLATFORM) {
             for (char32_t &c: res) {
                 c = util::ByteOrderUtil::swapOrder(c);
             }

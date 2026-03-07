@@ -22,7 +22,7 @@
 
 namespace bio::buffer {
     // TODO in the future we can actually make this templated, will work nicely.
-    /** Unsized reader/writer for a byte array */
+    /** Unsized reader & writer for a byte array */
     class BIO_API BinaryBuffer : public io::IReadable, public io::IPeekable, public io::IWritable, public io::ISeekable, public io::IBuffer {
       public:
         /** Creates a BinaryBuffer with the given input ptr as buffer */
@@ -65,6 +65,16 @@ namespace bio::buffer {
          */
         template <typename T> T read(const util::ByteOrder endian);
 
+        /** Reads a value the size of the given type using the platform endian/byte
+         * order
+         *
+         * @returns The value
+         *
+         * @see readBE() for reading a Big Endian value
+         * @see readLE() for reading a Little Endian value
+         */
+        template <typename T> T read();
+
         /** Reads a value the size of the given type using the given endian/byte
          * order
          *
@@ -79,6 +89,20 @@ namespace bio::buffer {
          * @see readLE() for reading a Little Endian value
          */
         template <typename T> T peek(const util::ByteOrder endian, const size_t offset = 0, const util::Origin origin = util::EOrigin::CURRENT_POSITION) const;
+
+        /** Reads a value the size of the given type using the platform endian/byte
+         * order
+         *
+         * @note Does not increment the position
+         *
+         * @param offset Offset to peek at (zero for byte at given origin)
+         * @param origin Origin to peek from. @ref bio::util::EOrigin::CURRENT_POSITION applies the offset to the current position, while @ref bio::util::EOrigin::START applies the offset to the data origin.
+         * @returns The value
+         *
+         * @see readBE() for reading a Big Endian value
+         * @see readLE() for reading a Little Endian value
+         */
+        template <typename T> T peek(const size_t offset = 0, const util::Origin origin = util::EOrigin::CURRENT_POSITION) const;
 
         /** Reads a value the size of the given type as Little Endian
          *
@@ -157,31 +181,26 @@ namespace bio::buffer {
          * @param endian The byte order to write that value in
          */
         template <typename T>
-        void write(const T v, const util::ByteOrder endian) {
-            if (endian == util::ByteOrder::LITTLE)
-                *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::little2sys(v);
-            else
-                *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::big2sys(v);
-            this->m_positionPtr += sizeof(T);
-        }
+        void write(const T v, const util::ByteOrder endian);
+
+        /** Writes a value with the platform endianness
+         *
+         * @param v The value to write
+         */
+        template <typename T>
+        void write(const T v);
 
         /** Writes a value in Little Endian
          *
          * @param v The value to write
          */
-        template <typename T> void writeLE(const T v) {
-            *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::little2sys(v);
-            this->m_positionPtr += sizeof(T);
-        }
+        template <typename T> void writeLE(const T v);
 
         /** Writes a value in Big Endian
          *
          * @param v The value to write
          */
-        template <typename T> void writeBE(const T v) {
-            *reinterpret_cast<T *>(this->m_positionPtr) = util::ByteOrderUtil::big2sys(v);
-            this->m_positionPtr += sizeof(T);
-        }
+        template <typename T> void writeBE(const T v);
 
         void writeByte(uint8_t v) override;
 

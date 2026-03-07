@@ -6,6 +6,7 @@
 #include "BinaryIO/buffer/BinaryBuffer.h"
 
 namespace bio::buffer {
+    /** Sized reader & writer for a byte array */
     class BIO_API SizedBinaryBuffer : public BinaryBuffer {
     public:
         /** Creates a SizedBinaryBuffer with the input ptr as buffer */

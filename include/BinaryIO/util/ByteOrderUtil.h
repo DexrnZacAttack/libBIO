@@ -74,7 +74,7 @@ namespace bio::util {
 
         template <typename T>
         static constexpr T big2sys(const T a) {
-#ifdef BR_BIG_ENDIAN
+#ifdef BIO_BIG_ENDIAN
             return a;
 #else
             return swapOrder(a);
@@ -83,7 +83,7 @@ namespace bio::util {
 
         template <typename T>
         static constexpr T little2sys(const T a) { // also is working as sys2little
-#ifdef BR_BIG_ENDIAN
+#ifdef BIO_BIG_ENDIAN
             return swapOrder(a);
 #else
             return a;

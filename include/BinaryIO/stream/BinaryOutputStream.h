@@ -23,6 +23,13 @@ namespace bio::stream {
         template<typename T>
         void write(const T v, const util::ByteOrder endian);
 
+        /** Writes a value with the platform endianness
+         *
+         * @param v The value to write
+         */
+        template<typename T>
+        void write(const T v);
+
         /** Writes a value in Little Endian
          *
          * @param v The value to write

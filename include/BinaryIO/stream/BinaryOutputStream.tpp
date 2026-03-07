@@ -6,8 +6,20 @@
 
 template<typename T>
 void BinaryOutputStream::write(const T v, const util::ByteOrder endian) {
-    if (endian == util::ByteOrder::LITTLE) this->writeLE(v);
-    else this->writeBE(v);
+    if (endian == util::ByteOrder::LITTLE) {
+        this->writeLE(v);
+    } else {
+        this->writeBE(v);
+    }
+}
+
+template <typename T>
+void BinaryOutputStream::write(const T v) {
+    BIO_IF_CONSTEXPR (util::ByteOrder::PLATFORM == util::ByteOrder::LITTLE) {
+        this->writeLE(v);
+    } else {
+        this->writeBE(v);
+    }
 }
 
 template<typename T>

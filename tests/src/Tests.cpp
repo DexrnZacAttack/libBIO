@@ -54,7 +54,7 @@ int main() {
     tfw::TestFramework::getInstance()->addComparableTest("Big endian read from memory", beOutputPreset, [&beOutputArray](tfw::test::util::TestOutputLogger &output) {
         bio::buffer::BinaryBuffer in = bio::buffer::BinaryBuffer(beOutputArray);
 
-        return in.readBE<bio::tests::util::Output>();
+        return in.readBE<bio::tests::util::Output>(); // technically this writes the entire thing backwards, but this is just a test of the byte swapping.
     });
 
     tfw::TestFramework::getInstance()->addTest("Little endian write to file", [leOutputPreset](tfw::test::util::TestOutputLogger &output) {

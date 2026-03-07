@@ -11,6 +11,24 @@
 #define CPP17 201703L
 #define CPP14 201402L
 #define CPP11 201103L
+#define CPP98 199711L
+
+#if __cplusplus >= CPP23
+#define CPP_VERSION 23
+#elif __cplusplus >= CPP20
+#define CPP_VERSION 20
+#elif __cplusplus >= CPP17
+#define CPP_VERSION 17
+#elif __cplusplus >= CPP14
+#define CPP_VERSION 14
+#elif __cplusplus >= CPP11
+#define CPP_VERSION 11
+#elif __cplusplus >= CPP98
+#define CPP_VERSION 98
+#else
+//unk
+#define CPP_VERSION 0xDEAD
+#endif
 
 namespace bio {
     namespace platform {

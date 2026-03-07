@@ -45,7 +45,23 @@ namespace bio::io {
          *
          * @see readInt24() for reading a signed 24-bit integer
          */
+        virtual uint32_t readUint24();
+
+        /** Reads an unsigned 24-bit integer
+         *
+         * @returns The unsigned 24-bit integer
+         *
+         * @see readInt24() for reading a signed 24-bit integer
+         */
         virtual uint32_t readUint24(bio::util::ByteOrder endian) = 0;
+
+        /** Reads a signed 24-bit integer
+         *
+         * @returns The signed 24-bit integer
+         *
+         * @see readInt24() for reading an unsigned 24-bit integer
+         */
+        virtual int32_t readInt24();
 
         /** Reads a signed 24-bit integer
          *

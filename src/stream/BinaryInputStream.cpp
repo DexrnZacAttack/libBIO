@@ -116,11 +116,7 @@ namespace bio::stream {
 
         readInto(reinterpret_cast<uint8_t *>(&res[0]), size * sizeof(char16_t));
 
-#if defined(BR_BIG_ENDIAN)
-        if (endian == util::ByteOrder::LITTLE) {
-#else
-        if (endian == util::ByteOrder::BIG) {
-#endif
+        if (endian != util::ByteOrder::PLATFORM) {
             for (char16_t &c: res) {
                 c = util::ByteOrderUtil::swapOrder(c);
             }
@@ -141,11 +137,7 @@ namespace bio::stream {
             res += c;
         }
 
-#if defined(BR_BIG_ENDIAN)
-        if (endian == util::ByteOrder::LITTLE) {
-#else
-        if (endian == util::ByteOrder::BIG) {
-#endif
+        if (endian != util::ByteOrder::PLATFORM) {
             for (char16_t &cc: res) {
                 cc = util::ByteOrderUtil::swapOrder(cc);
             }
@@ -159,11 +151,7 @@ namespace bio::stream {
 
         readInto(reinterpret_cast<uint8_t *>(&res[0]), size * sizeof(char32_t));
 
-#if defined(BR_BIG_ENDIAN)
-        if (endian == util::ByteOrder::LITTLE) {
-#else
-        if (endian == util::ByteOrder::BIG) {
-#endif
+        if (endian != util::ByteOrder::PLATFORM) {
             for (char32_t &c: res) {
                 c = util::ByteOrderUtil::swapOrder(c);
             }
@@ -184,11 +172,7 @@ namespace bio::stream {
             res += c;
         }
 
-#if defined(BR_BIG_ENDIAN)
-        if (endian == util::ByteOrder::LITTLE) {
-#else
-        if (endian == util::ByteOrder::BIG) {
-#endif
+        if (endian != util::ByteOrder::PLATFORM) {
             for (char32_t &cc: res) {
                 cc = util::ByteOrderUtil::swapOrder(cc);
             }

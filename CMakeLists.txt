@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.31)
-project(bio VERSION 3.0.1)
+project(bio VERSION 3.1.0)
 
 set(VERSION_SUFFIX "") # used for non-stable versions, otherwise leave blank
 include(CheckCXXCompilerFlag)
-
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 14) #default
-endif()
 
 if(CMAKE_CXX_STANDARD LESS 14)
     message(WARNING "C++14 or higher is required, libBIO may fail to build otherwise.")
@@ -47,70 +43,61 @@ set(FILES
         include/BinaryIO/stream/BinaryInputStream.tpp
         include/BinaryIO/stream/BinaryOutputStream.tpp
         include/BinaryIO/io/ISimplePeekable.h
+        include/BinaryIO/io/IPeekable.h
+        include/BinaryIO/util/Origin.h
+        include/BinaryIO/buffer/SizedBinaryBuffer.tpp
 )
 
 add_library(bio-static STATIC ${FILES})
+add_library(bio SHARED ${FILES})
 
-option(ENABLE_SHARED_BUILD "Enable shared library building" ON)
-if (ENABLE_SHARED_BUILD STREQUAL "ON")
-    add_library(bio SHARED ${FILES})
-else()
-    add_library(bio STATIC ${FILES})
-endif()
-unset(ENABLE_SHARED_BUILD CACHE)
+set(BIO_TARGETS bio bio-static)
 
 set_target_properties(bio-static bio PROPERTIES LINKER_LANGUAGE CXX) # CMake Error: CMake can not determine linker language for target: BinaryIO
 
-target_include_directories(bio-static
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
-target_include_directories(bio
-        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
+foreach(target IN LISTS BIO_TARGETS)
 
-target_compile_definitions(bio-static PRIVATE BIO_EXPORTS)
-target_compile_definitions(bio PRIVATE BIO_EXPORTS)
+    target_include_directories(${target}
+            PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    )
 
-target_compile_definitions(bio-static PUBLIC
-        BIO_CXX_STANDARD="${CMAKE_CXX_STANDARD}"
-        BIO_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
-        BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
-        BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
-        BIO_PLATFORM_ARCH="${CMAKE_SYSTEM_PROCESSOR}"
-        BIO_VERSION="${PROJECT_VERSION}${VERSION_SUFFIX}"
-        BIO_RC_VERSION=${PROJECT_VERSION_MAJOR},${PROJECT_VERSION_MINOR},${PROJECT_VERSION_PATCH}
-)
+    target_compile_definitions(${target} PRIVATE BIO_EXPORTS)
 
-target_compile_definitions(bio PUBLIC
-        BIO_CXX_STANDARD="${CMAKE_CXX_STANDARD}"
-        BIO_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
-        BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
-        BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
-        BIO_PLATFORM_ARCH="${CMAKE_SYSTEM_PROCESSOR}"
-        BIO_VERSION="${PROJECT_VERSION}${VERSION_SUFFIX}"
-        BIO_RC_VERSION=${PROJECT_VERSION_MAJOR},${PROJECT_VERSION_MINOR},${PROJECT_VERSION_PATCH}
-)
+    target_compile_definitions(${target} PUBLIC
+            BIO_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
+            BIO_COMPILER_NAME="${CMAKE_CXX_COMPILER_ID}"
+            BIO_PLATFORM_NAME="${CMAKE_SYSTEM_NAME}"
+            BIO_PLATFORM_ARCH="${CMAKE_SYSTEM_PROCESSOR}"
+            BIO_VERSION="${PROJECT_VERSION}${VERSION_SUFFIX}"
+            BIO_RC_VERSION=${PROJECT_VERSION_MAJOR},${PROJECT_VERSION_MINOR},${PROJECT_VERSION_PATCH}
+    )
 
-#set endianness define
-if (CMAKE_CXX_BYTE_ORDER EQUAL BIG_ENDIAN)
-    target_compile_definitions(bio-static PRIVATE IO_BIG_ENDIAN)
-    target_compile_definitions(bio PRIVATE IO_BIG_ENDIAN)
-endif ()
+    if (CMAKE_CXX_STANDARD)
+        target_compile_definitions(${target} PUBLIC
+                BIO_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+        )
+    endif()
 
-set(ALLOW_CPP17_EXTENSIONS_DEFAULT OFF)
-if (NOT CXX_EXTENSIONS STREQUAL OFF)
-    set(ALLOW_CPP17_EXTENSIONS_DEFAULT ON)
-endif()
+    #set endianness define
+    if (CMAKE_CXX_BYTE_ORDER STREQUAL BIG_ENDIAN)
+        target_compile_definitions(${target} PUBLIC BIO_BIG_ENDIAN)
+    endif ()
 
-option(ALLOW_CPP17_EXTENSIONS "Allow C++17 extensions in C++14" ${ALLOW_CPP17_EXTENSIONS_DEFAULT})
-if (ALLOW_CPP17_EXTENSIONS STREQUAL ON)
-    target_compile_definitions(bio-static PUBLIC BIO_ALLOW_CPP17_EXTENSIONS)
-    target_compile_definitions(bio PUBLIC BIO_ALLOW_CPP17_EXTENSIONS)
-endif ()
-unset(ALLOW_CPP17_EXTENSIONS CACHE)
+    set(ALLOW_CPP17_EXTENSIONS_DEFAULT OFF)
+    if (NOT CXX_EXTENSIONS STREQUAL OFF)
+        set(ALLOW_CPP17_EXTENSIONS_DEFAULT ON)
+    endif()
 
-option(BIO_COMPILE_DOCS "Create documentation task" ON)
-if (BIO_COMPILE_DOCS STREQUAL "ON")
+    option(ALLOW_CPP17_EXTENSIONS "Allow C++17 extensions in C++14" ${ALLOW_CPP17_EXTENSIONS_DEFAULT})
+    if (ALLOW_CPP17_EXTENSIONS STREQUAL ON)
+        target_compile_definitions(${target} PUBLIC BIO_ALLOW_CPP17_EXTENSIONS)
+    endif ()
+    unset(ALLOW_CPP17_EXTENSIONS CACHE)
+
+endforeach()
+
+option(BIO_DOCS_TARGET "Create documentation target" ON)
+if (BIO_DOCS_TARGET STREQUAL "ON")
     include(FetchContent)
     # https://github.com/jothepro/doxygen-awesome-css?tab=readme-ov-file#cmake-with-fetchcontent
     FetchContent_Declare(
@@ -135,8 +122,11 @@ if (BIO_COMPILE_DOCS STREQUAL "ON")
         )
     ENDIF ()
 endif ()
-unset(BIO_COMPILE_DOCS CACHE)
+unset(BIO_DOCS_TARGET CACHE)
 
-option(BIO_TESTS "Build libBIO tests" OFF)
+option(BIO_TESTS "Build libBIO tests" ON)
+if (BIO_TESTS STREQUAL "ON")
     add_subdirectory("tests")
+endif()
+
 unset(BIO_TESTS CACHE)
