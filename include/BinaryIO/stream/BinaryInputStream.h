@@ -3,117 +3,141 @@
 //
 #ifndef BIO_BINARYINPUTSTREAM_H
 #define BIO_BINARYINPUTSTREAM_H
+#include "BinaryIO/io/interface/ICanDeserialize.h"
+
 #include <iosfwd>
 #include <istream>
 #include <vector>
 
-#include "BinaryIO/io/IReadable.h"
+#include "BinaryIO/io/interface/IReadable.h"
 #include "BinaryIO/util/ByteOrder.h"
-#include "BinaryIO/io/ISeekable.h"
-#include "BinaryIO/io/ISimplePeekable.h"
+#include "BinaryIO/io/interface/ISeekable.h"
+#include "BinaryIO/io/interface/ISimplePeekable.h"
 #include "BinaryIO/util/ByteOrderUtil.h" //NOLINT (import is used by tpp file)
 
-namespace bio::stream {
-    // bis bos
-    /** std::istream wrapper with added reading methods */
-    class BIO_API BinaryInputStream : public io::IReadable, public io::ISimplePeekable, public io::ISeekable {
-    public:
-        explicit BinaryInputStream(std::istream &s);
+namespace bio {
+    namespace stream {
+        // bis bos
+        /** std::istream wrapper with added reading methods */
+        class BIO_API BinaryInputStream : public io::interface::IReadable,
+                                          public io::interface::ISimplePeekable,
+                                          public io::interface::ISeekable, public io::interface::ICanDeserialize {
+        public:
+            explicit BinaryInputStream(std::istream &s);
 
-        /** Reads a value the size of the given type using the given endian/byte
-         * order
-         *
-         * @param endian The byte order to read as
-         * @returns The value
-         *
-         * @see readBE() for reading a Big Endian value
-         * @see readLE() for reading a Little Endian value
-         */
-        template<typename T>
-        T read(util::ByteOrder endian);
+            IMPLEMENT_DESERIALIZABLE()
 
-        /** Reads a value the size of the given type using the platform endian/byte
-         * order
-         *
-         * @returns The value
-         *
-         * @see readBE() for reading a Big Endian value
-         * @see readLE() for reading a Little Endian value
-         */
-        template<typename T>
-        T read();
+            /** Reads a value the size of the given type using the given endian/byte
+             * order
+             *
+             * @param endian The byte order to read as
+             * @returns The value
+             *
+             * @see readBE() for reading a Big Endian value
+             * @see readLE() for reading a Little Endian value
+             */
+            template <typename T>
+            T read(util::ByteOrder endian);
 
-        /** Reads a value the size of the given type as Little Endian
-         *
-         * @returns The value
-         *
-         * @see readBE() for reading a Big Endian value
-         */
-        template<typename T>
-        T readLE();
+            /** Reads a value the size of the given type using the platform endian/byte
+             * order
+             *
+             * @returns The value
+             *
+             * @see readBE() for reading a Big Endian value
+             * @see readLE() for reading a Little Endian value
+             */
+            template <typename T>
+            T read();
 
-        /** Reads a value the size of the given type as Big Endian
-         *
-         * @returns The value
-         *
-         * @see readLE() for reading a Little Endian value
-         */
-        template<typename T>
-        T readBE();
+            /** Reads a value the size of the given type as Little Endian
+             *
+             * @returns The value
+             *
+             * @see readBE() for reading a Big Endian value
+             */
+            template <typename T>
+            T readLE();
 
-        uint8_t peekByte() const override;
+            /** Reads a value the size of the given type as Big Endian
+             *
+             * @returns The value
+             *
+             * @see readLE() for reading a Little Endian value
+             */
+            template <typename T>
+            T readBE();
 
-        int8_t peekSignedByte() const override;
+            uint8_t peekByte() const override;
 
-        uint8_t readByte() override;
+            int8_t peekSignedByte() const override;
 
-        int8_t readSignedByte() override;
+            uint8_t readByte() override;
 
-        uint32_t readUint24(bio::util::ByteOrder endian) override;
+            int8_t readSignedByte() override;
 
-        int32_t readInt24(bio::util::ByteOrder endian) override;
+            uint32_t readUint24(bio::util::ByteOrder endian) override;
 
-        uint8_t *readOfSize(size_t sz) override;
+            int32_t readInt24(bio::util::ByteOrder endian) override;
 
-        std::vector<uint8_t> readOfSizeVec(size_t sz) override;
+            uint8_t *readOfSize(size_t sz) override;
 
-        void readInto(uint8_t *into, size_t sz) override;
+            std::vector<uint8_t> readOfSizeVec(size_t sz) override;
 
-        size_t getOffset() const override;
+            void readInto(uint8_t *into, size_t sz) override;
 
-        void seek(size_t offset) override;
+            size_t getOffset() const override;
 
-        void seekRelative(size_t offset) override;
+            void seek(size_t offset) override;
 
-        bool canSeek() const override;
+            void seekRelative(size_t offset) override;
 
-        std::string readString(size_t size) override;
+            bool canSeek() const override;
 
-        std::string readStringNT() override;
+            /** Reads a wide string with the given length
+             *
+             * @returns The string
+             */
+            template <typename CharT, typename = std::enable_if_t<(sizeof(CharT) > 1)>>
+            std::basic_string<CharT> readString(size_t length, util::ByteOrder endian);
 
-        std::u16string readU16String(size_t size, bio::util::ByteOrder endian) override;
+            /** Reads a multibyte string with the given length
+             *
+             * @returns The string
+             */
+            template <typename CharT, typename = std::enable_if_t<sizeof(CharT) == 1>>
+            std::basic_string<CharT> readString(size_t length);
 
-        std::u16string readU16StringNT(bio::util::ByteOrder endian) override;
+            /** Reads a null terminated wide string
+             *
+             * @returns The string
+             */
+            template <typename CharT, typename = std::enable_if_t<(sizeof(CharT) > 1)>>
+            std::basic_string<CharT> readStringNullTerminated(util::ByteOrder endian);
 
-        std::u32string readU32String(size_t size, bio::util::ByteOrder endian) override;
+            /** Reads a null terminated multibyte string
+             *
+             * @returns The string
+             */
+            template <typename CharT, typename = std::enable_if_t<sizeof(CharT) == 1>>
+            std::basic_string<CharT> readStringNullTerminated();
 
-        std::u32string readU32StringNT(bio::util::ByteOrder endian) override;
+            ISeekable &operator+=(size_t amount) override;
 
-        ISeekable &operator+=(size_t amount) override;
+            ISeekable &operator-=(size_t amount) override;
 
-        ISeekable &operator-=(size_t amount) override;
+            const std::istream &getStream() const;
 
-        const std::istream &getStream() const;
+            std::istream &getStream();
 
-        std::istream &getStream();
+        private:
+            std::istream &m_stream;
 
-    private:
-        std::istream &m_stream;
-
-        bool m_isSeekable = false;
-    };
+            bool m_isSeekable = false;
+        };
 
 #include "BinaryIO/stream/BinaryInputStream.tpp"
+    }
 }
 
 #endif //BIO_BINARYINPUTSTREAM_H

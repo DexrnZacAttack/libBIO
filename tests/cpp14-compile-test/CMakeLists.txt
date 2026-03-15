@@ -14,5 +14,5 @@ target_include_directories(bio-cpp14-compile-test
 )
 
 target_link_libraries(bio-cpp14-compile-test
-        PRIVATE bio
+        PRIVATE bio-cpp14
 )

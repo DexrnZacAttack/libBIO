@@ -10,8 +10,6 @@ set(TEST_FILES
         include/BinaryIO/Tests/util/Output.h
 )
 
-add_subdirectory(cpp14-compile-test)
-
 include(FetchContent)
 FetchContent_Declare(tfw
         GIT_REPOSITORY https://codeberg.org/Dexrn/TFW
@@ -29,6 +27,8 @@ target_include_directories(bio-tests
 )
 
 target_link_libraries(bio-tests
-        PRIVATE bio
+        PRIVATE bio-cpp23
         PRIVATE tfw
 )
+
+add_subdirectory(cpp14-compile-test)

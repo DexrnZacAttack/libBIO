@@ -14,24 +14,39 @@
 #define CPP98 199711L
 
 #if __cplusplus >= CPP23
-#define CPP_VERSION 23
+#define BIO_CPP_VERSION 23
 #elif __cplusplus >= CPP20
-#define CPP_VERSION 20
+#define BIO_CPP_VERSION 20
 #elif __cplusplus >= CPP17
-#define CPP_VERSION 17
+#define BIO_CPP_VERSION 17
 #elif __cplusplus >= CPP14
-#define CPP_VERSION 14
+#define BIO_CPP_VERSION 14
 #elif __cplusplus >= CPP11
-#define CPP_VERSION 11
+#define BIO_CPP_VERSION 11
 #elif __cplusplus >= CPP98
-#define CPP_VERSION 98
+#define BIO_CPP_VERSION 98
 #else
 //unk
-#define CPP_VERSION 0xDEAD
+#define BIO_CPP_VERSION 0xDEAD
 #endif
+
+#if __cplusplus >= CPP17
+#include <string_view>
+#else
+#include <string>
+#endif
+
 
 namespace bio {
     namespace platform {
+#if __cplusplus >= CPP17
+        template <typename CharT>
+        using ReadableString = std::basic_string_view<CharT>;
+#else
+        template <typename CharT>
+        using ReadableString = std::basic_string<CharT>;
+#endif
+
 #if __cplusplus < CPP17 && !defined(BIO_ALLOW_CPP17_EXTENSIONS) //if below cpp17 and extensions haven't been explicitly allowed
 //set to if
 #   define BIO_IF_CONSTEXPR if

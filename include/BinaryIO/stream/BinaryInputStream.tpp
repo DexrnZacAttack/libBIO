@@ -13,7 +13,7 @@ T BinaryInputStream::read(const util::ByteOrder endian) {
 
 template <typename T>
 T BinaryInputStream::read() {
-    BIO_IF_CONSTEXPR (bio::util::ByteOrder::PLATFORM == bio::util::ByteOrder::LITTLE)
+    BIO_IF_CONSTEXPR (bio::util::ByteOrder::NATIVE == bio::util::ByteOrder::LITTLE)
         return readLE<T>();
 
     return readBE<T>();
@@ -33,6 +33,49 @@ T BinaryInputStream::readBE() {
     m_stream.read(reinterpret_cast<char *>(&p), sizeof(p));
 
     return util::ByteOrderUtil::big2sys(p);
+}
+
+template <typename CharT, typename>
+std::basic_string<CharT> BinaryInputStream::readString(size_t length, const util::ByteOrder endian) {
+    std::basic_string<CharT> s(length);
+    for (size_t i = 0; i < length; i++) {
+        s[i] = this->read<CharT>(endian);
+    }
+
+    return s;
+}
+
+template <typename CharT, typename>
+std::basic_string<CharT> BinaryInputStream::readString(const size_t length) {
+    const size_t byteLen = length * sizeof(CharT);
+    CharT *chars = this->readOfSize(byteLen);
+
+    return std::basic_string<CharT>(chars, chars + byteLen);
+}
+
+template <typename CharT, typename>
+std::basic_string<CharT>
+BinaryInputStream::readStringNullTerminated(const util::ByteOrder endian) {
+    std::basic_string<CharT> str;
+
+    CharT c;
+    while ((c = this->read<CharT>(endian)) != 0) {
+        str.push_back(c);
+    }
+
+    return str;
+}
+
+template <typename CharT, typename>
+std::basic_string<CharT> BinaryInputStream::readStringNullTerminated() {
+    std::basic_string<CharT> str;
+
+    CharT c;
+    while ((c = this->read<CharT>()) != 0) {
+        str.push_back(c);
+    }
+
+    return str;
 }
 
 #endif // BIO_BINARYINPUTSTREAM_TPP

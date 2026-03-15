@@ -6,19 +6,23 @@
 
 #include "BinaryIO/Library.h"
 
-namespace bio::util {
-    /** Byte Order/Endian dictates which way bytes are written */
-    enum class BIO_API ByteOrder {
-        BIG,   /**< Big Endian | Writes 0xA1B2C3D4 */
-        LITTLE, /**< Little Endian | Writes 0xD4C3B2A1 */
+namespace bio {
+    namespace util {
+        /** Byte Order/Endian dictates which way bytes are written */
+        enum class BIO_API ByteOrder {
+            BIG,   /**< Big Endian | Writes 0xA1B2C3D4 */
+            LITTLE, /**< Little Endian | Writes 0xD4C3B2A1 */
 
-        /** Platform byte order */
-#ifdef BIO_BIG_ENDIAN
-        PLATFORM = BIG
-#else
-        PLATFORM = LITTLE
-#endif
-    };
+            /** Platform byte order */
+    #ifdef BIO_BIG_ENDIAN
+            NATIVE = BIG,
+            NON_NATIVE = LITTLE
+    #else
+            NATIVE = LITTLE,
+            NON_NATIVE = BIG
+    #endif
+        };
+    }
 }
 
 #endif //BIO_BYTEORDER_H

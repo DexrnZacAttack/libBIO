@@ -3,93 +3,105 @@
 //
 #ifndef BIO_BINARYOUTPUTSTREAM_H
 #define BIO_BINARYOUTPUTSTREAM_H
+#include "BinaryIO/io/interface/ICanDeserialize.h"
+#include "BinaryIO/io/interface/ICanSerialize.h"
+
 #include <ostream>
 
-#include "BinaryIO/io/IWritable.h"
+#include "BinaryIO/io/interface/IWritable.h"
 #include "BinaryIO/util/ByteOrderUtil.h"
-#include "BinaryIO/io/ISeekable.h"
+#include "BinaryIO/io/interface/ISeekable.h"
 
-namespace bio::stream {
-    /** std::ostream wrapper with added writing methods */
-    class BIO_API BinaryOutputStream : public io::IWritable, public io::ISeekable {
-    public:
-        explicit BinaryOutputStream(std::ostream &s);
+namespace bio {
+    namespace stream {
+        /** std::ostream wrapper with added writing methods */
+        class BIO_API BinaryOutputStream : public io::interface::IWritable,
+                                           public io::interface::ISeekable, public io::interface::ICanSerialize {
+        public:
+            explicit BinaryOutputStream(std::ostream &s);
 
-        /** Writes a value with the given endianness
-         *
-         * @param v The value to write
-         * @param endian The byte order to write that value in
-         */
-        template<typename T>
-        void write(const T v, const util::ByteOrder endian);
+            IMPLEMENT_SERIALIZABLE()
+            IMPLEMENT_DESERIALIZABLE()
 
-        /** Writes a value with the platform endianness
-         *
-         * @param v The value to write
-         */
-        template<typename T>
-        void write(const T v);
+            /** Writes a value with the given endianness
+             *
+             * @param v The value to write
+             * @param endian The byte order to write that value in
+             */
+            template <typename T>
+            void write(const T v, const util::ByteOrder endian);
 
-        /** Writes a value in Little Endian
-         *
-         * @param v The value to write
-         */
-        template<typename T>
-        void writeLE(const T v);
+            /** Writes a value with the platform endianness
+             *
+             * @param v The value to write
+             */
+            template <typename T>
+            void write(const T v);
 
-        /** Writes a value in Big Endian
-         *
-         * @param v The value to write
-         */
-        template<typename T>
-        void writeBE(const T v);
+            /** Writes a value in Little Endian
+             *
+             * @param v The value to write
+             */
+            template <typename T>
+            void writeLE(const T v);
 
-        void writeByte(uint8_t v) override;
+            /** Writes a value in Big Endian
+             *
+             * @param v The value to write
+             */
+            template <typename T>
+            void writeBE(const T v);
 
-        void writeSignedByte(int8_t v) override;
+            void writeByte(uint8_t v) override;
 
-        void writeBytes(const uint8_t *v, size_t size) override;
+            void writeSignedByte(int8_t v) override;
 
-        void writeString(const std::string &input, bool nullTerminate) override;
+            void writeBytes(const uint8_t *v, size_t size) override;
 
-        void writeU16String(const std::u16string &input, bio::util::ByteOrder endian, bool nullTerminate) override;
+            /** Writes a string
+             *
+             * @param input The input string
+             * @param byteOrder The byte order for each char to be written with, if sizeof(CharT) is 1, this will be only used for writing the lengthEncoding
+             * @param lengthEncoding The method in which we should encode the length alongside the string
+             */
+            template <typename CharT>
+            void writeString(const platform::ReadableString<CharT> &input, util::ByteOrder byteOrder, util::string::StringLengthEncoding lengthEncoding);
 
-        void writeU32String(const std::u32string &input, bio::util::ByteOrder endian, bool nullTerminate) override;
+            size_t getOffset() const override;
 
-        size_t getOffset() const override;
+            void seek(size_t offset) override;
 
-        void seek(size_t offset) override;
+            void seekRelative(size_t offset) override;
 
-        void seekRelative(size_t offset) override;
+            bool canSeek() const override;
 
-        bool canSeek() const override;
+            ISeekable &operator+=(size_t amount) override;
 
-        ISeekable &operator+=(size_t amount) override;
+            ISeekable &operator-=(size_t amount) override;
 
-        ISeekable &operator-=(size_t amount) override;
+            const std::ostream &getStream() const;
 
-        const std::ostream &getStream() const;
+            std::ostream &getStream();
 
-        std::ostream &getStream();
+            void writeUint24(uint32_t v, bio::util::ByteOrder endian) override;
 
-        void writeUint24(uint32_t v, bio::util::ByteOrder endian) override;
+            void writeInt24(int32_t v, bio::util::ByteOrder endian) override;
 
-        void writeInt24(int32_t v, bio::util::ByteOrder endian) override;
+            /** Writes `sz` amount of `b` bytes
+             *
+             * @param b The byte to fill with
+             * @param sz How many bytes should be placed
+             */
+            void fill(uint8_t b, size_t sz);
 
-        /** Writes `sz` amount of `b` bytes
-         *
-         * @param b The byte to fill with
-         * @param sz How many bytes should be placed
-         */
-        void fill(uint8_t b, size_t sz);
+        private:
+            std::ostream &m_stream;
 
-    private:
-        std::ostream &m_stream;
-
-        bool m_isSeekable = false;
-    };
+            bool m_isSeekable = false;
+        };
 
 #include "BinaryIO/stream/BinaryOutputStream.tpp"
+    }
 }
 
 #endif //BIO_BINARYOUTPUTSTREAM_H
