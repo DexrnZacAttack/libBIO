@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "BinaryIO/util/ByteOrder.h"
+#include "BinaryIO/util/string/StringLengthEncoding.h"
 
 #include <memory>
 
@@ -135,33 +136,27 @@ namespace bio {
                  */
                 virtual void readInto(uint8_t *into, size_t sz) = 0;
 
-                /** Reads a wide string with the given length
+                // TODO we can also make this nicer by turning lengthEncoding into a templated value, but it removes passing the type at runtime.
+                // However, we can then allow for things like specifying the string length prefix type, or the terminator char value, and make it clearer that the user can't pass NONE into it lol
+
+                /** Reads a string with an encoded length
+                 *
+                 * @note if you're providing @ref bio::util::string::StringLengthEncoding::NULL_TERMINATED for lengthEncoding, and CharT as char, then endian is not used.
+                 *
+                 * @param endian The endianness to read the chars and/or lengthEncoding as.
+                 * @param lengthEncoding The length encoding type.
                  *
                  * @returns The string
                  */
-                template <typename CharT, typename = std::enable_if_t<(sizeof(CharT) > 1)>>
-                std::basic_string<CharT> readString(size_t length, util::ByteOrder endian);
+                template <typename CharT>
+                std::basic_string<CharT> readStringWithLength(util::ByteOrder endian, util::string::StringLengthEncoding lengthEncoding);
 
-                /** Reads a multibyte string with the given length
+                /** Reads a char string that ends with a null terminator
                  *
-                 * @returns The string
+                 * This is a wrapper around @ref readStringWithLength(util::ByteOrder endian, util::string::StringLengthEncoding lengthEncoding)
                  */
                 template <typename CharT, typename = std::enable_if_t<sizeof(CharT) == 1>>
-                std::basic_string<CharT> readString(size_t length);
-
-                /** Reads a null terminated wide string
-                 *
-                 * @returns The string
-                 */
-                template <typename CharT, typename = std::enable_if_t<(sizeof(CharT) > 1)>>
-                std::basic_string<CharT> readStringNullTerminated(util::ByteOrder endian);
-
-                /** Reads a null terminated multibyte string
-                 *
-                 * @returns The string
-                 */
-                template <typename CharT, typename = std::enable_if_t<sizeof(CharT) == 1>>
-                std::basic_string<CharT> readStringNullTerminated();
+                std::basic_string<CharT> readCharStringNullTerminated();
 
                 /** Reads a byte */
                 virtual IReadable &operator>>(uint8_t &b);

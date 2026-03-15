@@ -53,29 +53,36 @@ std::basic_string<CharT> BinaryInputStream::readString(const size_t length) {
     return std::basic_string<CharT>(chars, chars + byteLen);
 }
 
-template <typename CharT, typename>
-std::basic_string<CharT>
-BinaryInputStream::readStringNullTerminated(const util::ByteOrder endian) {
+template <typename CharT>
+std::basic_string<CharT> BinaryInputStream::readStringWithLength(util::ByteOrder endian, util::string::StringLengthEncoding lengthEncoding) {
     std::basic_string<CharT> str;
 
-    CharT c;
-    while ((c = this->read<CharT>(endian)) != 0) {
-        str.push_back(c);
+    switch (lengthEncoding) {
+    case util::string::StringLengthEncoding::NULL_TERMINATE: {
+        CharT c;
+        while ((c = this->read<CharT>(endian)) != 0) {
+            str.push_back(c);
+        }
+        break;
+    }
+    case util::string::StringLengthEncoding::LENGTH_PREFIX: {
+        const uint16_t len = this->read<uint16_t>(endian);
+
+        for (int i = 0; i < len; i++) {
+            str.push_back(this->read<CharT>(endian));
+        }
+        break;
+    }
+    case util::string::StringLengthEncoding::NONE:
+        //if user puts in NONE, how are we supposed to get length??????
+        throw std::invalid_argument("StringLengthEncoding::NONE is not valid here, please use readString instead and provide your own length value.");
     }
 
     return str;
 }
 
-template <typename CharT, typename>
-std::basic_string<CharT> BinaryInputStream::readStringNullTerminated() {
-    std::basic_string<CharT> str;
-
-    CharT c;
-    while ((c = this->read<CharT>()) != 0) {
-        str.push_back(c);
-    }
-
-    return str;
+template <typename CharT, typename> std::basic_string<CharT> BinaryInputStream::readCharStringNullTerminated() {
+    return this->readStringWithLength<CharT>(util::ByteOrder::NATIVE, util::string::StringLengthEncoding::NULL_TERMINATE);
 }
 
 #endif // BIO_BINARYINPUTSTREAM_TPP

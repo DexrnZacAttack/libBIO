@@ -115,27 +115,43 @@ template <typename CharT, typename> std::basic_string<CharT> BinaryBuffer::readS
     return s;
 }
 
-template <typename CharT, typename>
-std::basic_string<CharT> BinaryBuffer::readStringNullTerminated(const util::ByteOrder endian) {
-    const size_t len = std::char_traits<CharT>::length(reinterpret_cast<CharT *>(this->m_positionPtr));
-    std::basic_string<CharT> str = this->readString<CharT>(len, endian);
+template <typename CharT>
+std::basic_string<CharT> BinaryBuffer::readStringWithLength(const util::ByteOrder endian,
+                                                            const util::string::StringLengthEncoding lengthEncoding) {
+    size_t len;
 
-    // null terminator
-    this->m_positionPtr += 1 * sizeof(CharT);
+    switch (lengthEncoding) {
+    case util::string::StringLengthEncoding::NULL_TERMINATE:
+        len = std::char_traits<CharT>::length(reinterpret_cast<CharT *>(this->m_positionPtr));
+        break;
+    case util::string::StringLengthEncoding::LENGTH_PREFIX:
+        len = this->read<uint16_t>(endian);
+        break;
+    case util::string::StringLengthEncoding::NONE:
+        //if user puts in NONE, how are we supposed to get length??????
+        throw std::invalid_argument("StringLengthEncoding::NONE is not valid here, please use readString instead and provide your own length value.");
+    }
+
+    std::basic_string<CharT> str;
+
+    BIO_IF_CONSTEXPR (sizeof(CharT) == 1) {
+        CharT *p = reinterpret_cast<CharT *>(this->m_positionPtr);
+
+        str = std::basic_string<CharT>(p, p + len);
+        this->m_positionPtr += len * sizeof(CharT);
+    } else {
+        str = this->readString<CharT>(len, endian);
+    }
+
+    if (lengthEncoding == util::string::StringLengthEncoding::NULL_TERMINATE) {
+        this->m_positionPtr += 1 * sizeof(CharT);
+    }
 
     return str;
 }
 
-template <typename CharT, typename> std::basic_string<CharT> BinaryBuffer::readStringNullTerminated() {
-    CharT *p = reinterpret_cast<CharT *>(this->m_positionPtr);
-
-    const size_t len = std::char_traits<CharT>::length(p);
-
-    std::basic_string<CharT> str = std::basic_string<CharT>(p, p + len);
-    this->m_positionPtr += len * sizeof(CharT);
-    this->m_positionPtr += 1 * sizeof(CharT); // null terminator
-
-    return str;
+template <typename CharT, typename> std::basic_string<CharT> BinaryBuffer::readCharStringNullTerminated() {
+    return this->readStringWithLength<CharT>(util::ByteOrder::NATIVE, util::string::StringLengthEncoding::NULL_TERMINATE);
 }
 
 template <typename CharT>

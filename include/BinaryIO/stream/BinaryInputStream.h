@@ -10,10 +10,11 @@
 #include <vector>
 
 #include "BinaryIO/io/interface/IReadable.h"
-#include "BinaryIO/util/ByteOrder.h"
 #include "BinaryIO/io/interface/ISeekable.h"
 #include "BinaryIO/io/interface/ISimplePeekable.h"
+#include "BinaryIO/util/ByteOrder.h"
 #include "BinaryIO/util/ByteOrderUtil.h" //NOLINT (import is used by tpp file)
+#include "BinaryIO/util/string/StringLengthEncoding.h"
 
 namespace bio {
     namespace stream {
@@ -108,19 +109,24 @@ namespace bio {
             template <typename CharT, typename = std::enable_if_t<sizeof(CharT) == 1>>
             std::basic_string<CharT> readString(size_t length);
 
-            /** Reads a null terminated wide string
+            /** Reads a string with an encoded length
+             *
+             * @note if you're providing @ref bio::util::string::StringLengthEncoding::NULL_TERMINATED for lengthEncoding, and CharT as char, then endian is not used.
+             *
+             * @param endian The endianness to read the chars and/or lengthEncoding as.
+             * @param lengthEncoding The length encoding type.
              *
              * @returns The string
              */
-            template <typename CharT, typename = std::enable_if_t<(sizeof(CharT) > 1)>>
-            std::basic_string<CharT> readStringNullTerminated(util::ByteOrder endian);
+            template <typename CharT>
+            std::basic_string<CharT> readStringWithLength(util::ByteOrder endian, util::string::StringLengthEncoding lengthEncoding);
 
-            /** Reads a null terminated multibyte string
+            /** Reads a char string that ends with a null terminator
              *
-             * @returns The string
+             * This is a wrapper around @ref readStringWithLength(util::ByteOrder endian, util::string::StringLengthEncoding lengthEncoding)
              */
             template <typename CharT, typename = std::enable_if_t<sizeof(CharT) == 1>>
-            std::basic_string<CharT> readStringNullTerminated();
+            std::basic_string<CharT> readCharStringNullTerminated();
 
             ISeekable &operator+=(size_t amount) override;
 

@@ -64,6 +64,7 @@ target_link_libraries(MyProj PRIVATE bio-static-cpp20)
   - The user impl could have it call `buf.read<T>` internally and create a struct based off those values, as commonly seen in many implementations.
 - [X] Improve string reading/writing
   - [X] Allow for writing const char *, const char16_t *, const char32_t *, etc.
+  - [X] Allow for choosing the length encoding(?) next to the string
   - [ ] Allow for getting a fast reference view of the string
     - This string would be very temporary, as it would be invalid as soon as the data pointer which the buffer holds is deleted/invalidated 
     - Ideally, return an `std::string_view` that views over the string in data 
