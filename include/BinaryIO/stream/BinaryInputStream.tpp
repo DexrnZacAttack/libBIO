@@ -37,7 +37,7 @@ T BinaryInputStream::readBE() {
 
 template <typename CharT, typename>
 std::basic_string<CharT> BinaryInputStream::readString(size_t length, const util::ByteOrder endian) {
-    std::basic_string<CharT> s(length);
+    std::basic_string<CharT> s(length, 0);
     for (size_t i = 0; i < length; i++) {
         s[i] = this->read<CharT>(endian);
     }
@@ -48,7 +48,7 @@ std::basic_string<CharT> BinaryInputStream::readString(size_t length, const util
 template <typename CharT, typename>
 std::basic_string<CharT> BinaryInputStream::readString(const size_t length) {
     const size_t byteLen = length * sizeof(CharT);
-    CharT *chars = this->readOfSize(byteLen);
+    CharT *chars = reinterpret_cast<CharT *>(this->readOfSize(byteLen));
 
     return std::basic_string<CharT>(chars, chars + byteLen);
 }

@@ -55,6 +55,12 @@ namespace bio {
 
             template <typename T>
             using ConstIterator = Iterator<const T>;
+
+            template <typename T>
+            using ReverseIterator = std::reverse_iterator<Iterator<T>>;
+
+            template <typename T>
+            using ConstReverseIterator = std::reverse_iterator<ConstIterator<T>>;
         }
     } // io
 } // bio

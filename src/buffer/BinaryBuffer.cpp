@@ -185,8 +185,7 @@ namespace bio {
         }
 
         std::vector<uint8_t> BinaryBuffer::readOfSizeVec(const size_t sz) {
-            std::vector<uint8_t> result(this->m_positionPtr,
-                                        this->m_positionPtr + sz);
+            std::vector<uint8_t> result(this->m_positionPtr, this->m_positionPtr + sz);
             this->m_positionPtr += sz;
             return result;
         }

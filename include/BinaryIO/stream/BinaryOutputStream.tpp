@@ -31,7 +31,7 @@ void BinaryOutputStream::writeLE(const T v) {
 template<typename T>
 void BinaryOutputStream::writeBE(const T v) {
     T c = util::ByteOrderUtil::big2sys(v);
-    m_stream.write(reinterpret_cast<char *>(&c), sizeof(v));
+    m_stream.write(reinterpret_cast<char *>(&c), sizeof(c));
 }
 
 template <typename CharT>

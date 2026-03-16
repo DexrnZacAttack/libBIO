@@ -54,6 +54,15 @@ namespace bio {
 
             T *endPtr() { return this->m_end; }
 
+            /** Returns the start pointer */
+            const T *startPtr() const { return this->m_begin; }
+
+            const T *endPtr() const { return this->m_end; }
+
+            std::size_t size() const { return this->m_end - this->m_begin; }
+
+            std::size_t byteSize() const { return reinterpret_cast<uint8_t *>(this->m_end) - reinterpret_cast<uint8_t *>(this->m_begin); }
+
             T &operator[](std::size_t p) override { return *(this->m_begin + p); }
 
             const T &operator[](std::size_t p) const override { return *(this->m_begin + p); }
@@ -74,21 +83,13 @@ namespace bio {
 
             io::iter::ConstIterator<T> end() const { return io::iter::ConstIterator<T>(this->m_end); }
 
-            std::reverse_iterator<io::iter::Iterator<T>> rbegin() {
-                return std::reverse_iterator<io::iter::Iterator<T>>(this->m_end);
-            }
+            io::iter::ReverseIterator<T> rbegin() { return io::iter::ReverseIterator<T>(this->m_end); }
 
-            std::reverse_iterator<io::iter::Iterator<T>> rend() {
-                return std::reverse_iterator<io::iter::Iterator<T>>(this->m_begin);
-            }
+            io::iter::ReverseIterator<T> rend() { return io::iter::ReverseIterator<T>(this->m_begin); }
 
-            std::reverse_iterator<io::iter::ConstIterator<T>> rbegin() const {
-                return std::reverse_iterator<io::iter::ConstIterator<T>>(this->m_end);
-            }
+            io::iter::ConstReverseIterator<T> rbegin() const { return io::iter::ConstReverseIterator<T>(this->m_end); }
 
-            std::reverse_iterator<io::iter::ConstIterator<T>> rend() const {
-                return std::reverse_iterator<io::iter::ConstIterator<T>>(this->m_begin);
-            }
+            io::iter::ConstReverseIterator<T> rend() const { return io::iter::ConstReverseIterator<T>(this->m_begin); }
 
           private:
             T *m_begin;

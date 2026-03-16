@@ -116,7 +116,6 @@ public:
         output->d = readable.template read<double>(options.byteOrder);
         // output->ld = readable.template read<long double>(options.byteOrder);
 
-        // TODO turn into readStringWithLength
         output->str = readable.template readCharStringNullTerminated<char>();
         output->str16 = readable.template readStringWithLength<char16_t>(options.byteOrder, util::string::StringLengthEncoding::NULL_TERMINATE);
         output->str32 = readable.template readStringWithLength<char32_t>(options.byteOrder, util::string::StringLengthEncoding::NULL_TERMINATE);
