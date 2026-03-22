@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.31)
 project(bio VERSION 4.0.0)
 
-set(VERSION_SUFFIX "-dev.3") # used for non-stable versions, otherwise leave blank
+set(VERSION_SUFFIX "-dev.4") # used for non-stable versions, otherwise leave blank
 include(CheckCXXCompilerFlag)
 
 if(CMAKE_CXX_STANDARD LESS 14)
@@ -83,7 +83,11 @@ foreach(version IN LISTS BIO_CPP_VERSIONS)
             )
         endif()
 
-        message(STATUS "Created ${targetName}")
+        message(STATUS "libBIO: Created ${targetName}")
+
+        set_target_properties(${targetName} PROPERTIES
+                POSITION_INDEPENDENT_CODE ON
+        )
 
         target_include_directories(${targetName}
                 PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -103,7 +107,7 @@ foreach(version IN LISTS BIO_CPP_VERSIONS)
         option(BIO_ENABLE_OPTIMIZATIONS "Enable compiler optimizations" ON)
         if (BIO_ENABLE_OPTIMIZATIONS STREQUAL "ON")
             if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-                target_compile_options(${targetName} PRIVATE -O3 -ffast-math -march=native -fpic -ftree-vectorize)
+                target_compile_options(${targetName} PRIVATE -O3 -ffast-math -march=native -ftree-vectorize)
             endif()
         endif ()
         unset(BIO_ENABLE_OPTIMIZATIONS CACHE)
