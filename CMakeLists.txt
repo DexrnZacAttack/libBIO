@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.31)
 project(bio VERSION 4.0.0)
 
-set(VERSION_SUFFIX "-dev.4") # used for non-stable versions, otherwise leave blank
+set(VERSION_SUFFIX "-dev.5") # used for non-stable versions, otherwise leave blank
 include(CheckCXXCompilerFlag)
 
 if(CMAKE_CXX_STANDARD LESS 14)

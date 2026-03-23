@@ -10,15 +10,17 @@ set(TEST_FILES
         include/BinaryIO/Tests/util/Output.h
 )
 
-include(FetchContent)
-FetchContent_Declare(tfw
-        GIT_REPOSITORY https://codeberg.org/Dexrn/TFW
-        GIT_TAG        main
-        GIT_PROGRESS   TRUE
-        GIT_SHALLOW    TRUE
-        EXCLUDE_FROM_ALL
-)
-FetchContent_MakeAvailable(tfw)
+if (NOT TARGET tfw)
+    include(FetchContent)
+    FetchContent_Declare(tfw
+            GIT_REPOSITORY https://codeberg.org/Dexrn/TFW
+            GIT_TAG        main
+            GIT_PROGRESS   TRUE
+            GIT_SHALLOW    TRUE
+            EXCLUDE_FROM_ALL
+    )
+    FetchContent_MakeAvailable(tfw)
+endif()
 
 add_executable(bio-tests ${TEST_FILES})
 
