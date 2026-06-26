@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.31)
 project(bio VERSION 4.0.0)
 
-set(VERSION_SUFFIX "-dev.5") # used for non-stable versions, otherwise leave blank
+set(VERSION_SUFFIX "-dev.6") # used for non-stable versions, otherwise leave blank
 include(CheckCXXCompilerFlag)
 
 if(CMAKE_CXX_STANDARD LESS 14)
@@ -47,8 +47,13 @@ set(FILES
         include/BinaryIO/util/string/StringLengthEncoding.h
 )
 
-set(BIO_TARGETS bio bio-static)
-set(BIO_TARGET_TYPES SHARED STATIC)
+if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    set(BIO_TARGETS bio)
+    set(BIO_TARGET_TYPES STATIC)
+else()
+    set(BIO_TARGETS bio bio-static)
+    set(BIO_TARGET_TYPES SHARED STATIC)
+endif()
 set(BIO_CPP_VERSIONS
         14
         17
@@ -107,7 +112,11 @@ foreach(version IN LISTS BIO_CPP_VERSIONS)
         option(BIO_ENABLE_OPTIMIZATIONS "Enable compiler optimizations" ON)
         if (BIO_ENABLE_OPTIMIZATIONS STREQUAL "ON")
             if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-                target_compile_options(${targetName} PRIVATE -O3 -ffast-math -march=native -ftree-vectorize)
+                if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+                    target_compile_options(${targetName} PRIVATE -O3 -ffast-math -ftree-vectorize)
+                else()
+                    target_compile_options(${targetName} PRIVATE -O3 -ffast-math -march=native -ftree-vectorize)
+                endif()
             endif()
         endif ()
         unset(BIO_ENABLE_OPTIMIZATIONS CACHE)
