@@ -47,12 +47,12 @@ set(FILES
         include/BinaryIO/util/string/StringLengthEncoding.h
 )
 
-if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    set(BIO_TARGETS bio)
-    set(BIO_TARGET_TYPES STATIC)
-else()
+if (BUILD_SHARED_LIBS)
     set(BIO_TARGETS bio bio-static)
     set(BIO_TARGET_TYPES SHARED STATIC)
+else()
+    set(BIO_TARGETS bio)
+    set(BIO_TARGET_TYPES STATIC)
 endif()
 set(BIO_CPP_VERSIONS
         14
@@ -112,10 +112,10 @@ foreach(version IN LISTS BIO_CPP_VERSIONS)
         option(BIO_ENABLE_OPTIMIZATIONS "Enable compiler optimizations" ON)
         if (BIO_ENABLE_OPTIMIZATIONS STREQUAL "ON")
             if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-                if (CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-                    target_compile_options(${targetName} PRIVATE -O3 -ffast-math -ftree-vectorize)
-                else()
-                    target_compile_options(${targetName} PRIVATE -O3 -ffast-math -march=native -ftree-vectorize)
+                target_compile_options(${targetName} PRIVATE -O3 -ffast-math -ftree-vectorize)
+
+                if(CMAKE_SYSTEM_PROCESSOR STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR AND NOT APPLE)
+                    target_compile_options(${targetName} PRIVATE -march=native)
                 endif()
             endif()
         endif ()
